@@ -1,5 +1,7 @@
 {
   "name": "zakah-app",
-  "integrations": {},
+  "integrations": {
+    "capacitor": {}
+  },
   "type": "angular"
 }

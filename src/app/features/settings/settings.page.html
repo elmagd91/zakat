@@ -1,0 +1,105 @@
+<ion-header class="ion-no-border">
+  <ion-toolbar>
+    <ion-buttons slot="start">
+      <ion-back-button defaultHref="/home" text="Back"></ion-back-button>
+    </ion-buttons>
+    <ion-title>Settings</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content class="ion-padding">
+
+  <!-- Hedge Buffer -->
+  <div class="section-header">
+    <ion-icon name="shield-checkmark-outline"></ion-icon>
+    <h2>Zakat Hedge Buffer</h2>
+  </div>
+
+  <ion-card class="settings-card">
+    <ion-card-header>
+      <ion-card-title>Precautionary Buffer</ion-card-title>
+      <ion-card-subtitle>Applied to your total wealth before Zakat calculation</ion-card-subtitle>
+    </ion-card-header>
+    <ion-card-content>
+
+      <div class="hedge-display">
+        <div class="hedge-value">{{ hedgePercentage }}%</div>
+        <div class="hedge-label">Buffer</div>
+      </div>
+
+      <ion-range
+        [min]="minHedge"
+        [max]="maxHedge"
+        [step]="1"
+        [value]="hedgePercentage"
+        (ionChange)="onHedgeChange($event)"
+        color="success"
+        class="hedge-range"
+        [snaps]="true"
+        [ticks]="true"
+      >
+        <span slot="start" class="range-label">{{ minHedge }}%</span>
+        <span slot="end" class="range-label">{{ maxHedge }}%</span>
+      </ion-range>
+
+      <div class="hedge-explanation">
+        <ion-icon name="information-circle-outline"></ion-icon>
+        <p>{{ hedgeExplanation }}</p>
+      </div>
+
+    </ion-card-content>
+  </ion-card>
+
+  <!-- About Hedge -->
+  <div class="section-header">
+    <ion-icon name="leaf-outline"></ion-icon>
+    <h2>About the Hedge</h2>
+  </div>
+
+  <ion-card class="info-card">
+    <ion-card-content>
+      <h3>What is the Hedge Buffer?</h3>
+      <p>
+        Gold and currency prices fluctuate constantly. The Precautionary Zakat
+        adds a buffer percentage to your total wealth before calculating
+        the 2.5% Zakat obligation.
+      </p>
+      <p>
+        This ensures you pay Zakat on a slightly inflated estimate,
+        providing <strong>peace of mind</strong> that your full obligation
+        is covered even if prices change during the year.
+      </p>
+      <div class="formula-box">
+        <p class="formula-title">Formula</p>
+        <p class="formula">Hedge Zakat = Total Wealth × (1 + Buffer%) × 2.5%</p>
+      </div>
+    </ion-card-content>
+  </ion-card>
+
+  <!-- About Nisab -->
+  <div class="section-header">
+    <ion-icon name="information-circle-outline"></ion-icon>
+    <h2>About Nisab</h2>
+  </div>
+
+  <ion-card class="info-card">
+    <ion-card-content>
+      <h3>What is Nisab?</h3>
+      <p>
+        The Nisab is the minimum threshold of wealth that makes Zakat
+        obligatory. It is equivalent to <strong>85 grams of pure gold (24K)</strong>.
+      </p>
+      <p>
+        If your total wealth is below the Nisab, no Zakat is due.
+        Zakat becomes obligatory after holding wealth above the Nisab
+        for a full lunar year (Hawl).
+      </p>
+      <div class="nisab-note">
+        <ion-icon name="information-circle-outline"></ion-icon>
+        <p>This calculator does not track Hawl (one-year period). Please consult a scholar for full Zakat guidance.</p>
+      </div>
+    </ion-card-content>
+  </ion-card>
+
+  <div class="bottom-padding"></div>
+</ion-content>

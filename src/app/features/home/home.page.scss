@@ -1,0 +1,689 @@
+// Home page SCSS - Islamic-themed dark UI with gold accents
+
+:host {
+  --page-bg: #0d1117;
+  --surface: #161b22;
+  --surface-elevated: #1c2233;
+  --border: rgba(255, 255, 255, 0.08);
+  --primary: #10b981;   // emerald green
+  --primary-glow: rgba(16, 185, 129, 0.2);
+  --gold: #f59e0b;
+  --gold-glow: rgba(245, 158, 11, 0.2);
+  --text-primary: #e6edf3;
+  --text-secondary: #8b949e;
+  --text-muted: #484f58;
+  --danger: #ef4444;
+  --card-radius: 16px;
+}
+
+ion-header ion-toolbar {
+  --background: #0d1117;
+  --border-color: transparent;
+  padding: 2px 4px;
+  padding-top: calc(var(--ion-safe-area-top, 24px) + 4px);
+}
+
+.header-content {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 8px;
+}
+
+.header-logo {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.logo-icon {
+  width: 32px;
+  height: 32px;
+  background: linear-gradient(135deg, var(--primary), var(--gold));
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 16px;
+  box-shadow: 0 0 12px var(--primary-glow);
+}
+
+.header-titles {
+  display: flex;
+  flex-direction: column;
+}
+
+.header-sub {
+  font-size: 9px;
+  color: var(--primary);
+  margin: 0;
+  font-weight: 500;
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+}
+
+.header-main {
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--text-primary);
+  margin: 0;
+}
+
+.header-actions {
+  display: flex;
+  align-items: center;
+  gap: 0;
+}
+
+.saved-badge {
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--primary);
+  background: rgba(16, 185, 129, 0.12);
+  border: 1px solid rgba(16, 185, 129, 0.25);
+  border-radius: 20px;
+  padding: 3px 10px;
+  opacity: 0;
+  transform: translateY(-4px);
+  transition: opacity 0.2s ease, transform 0.2s ease;
+  pointer-events: none;
+  white-space: nowrap;
+
+  &.visible {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.icon-btn {
+  --color: var(--danger);
+  font-size: 20px;
+}
+
+.settings-btn {
+  --color: var(--text-secondary);
+  font-size: 22px;
+}
+
+// ── Status Banner ──
+.status-banner {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 14px;
+  background: rgba(16, 185, 129, 0.12);
+  border: 1px solid rgba(16, 185, 129, 0.25);
+  border-radius: 10px;
+  margin-bottom: 12px;
+  color: var(--primary);
+  font-size: 13px;
+
+  &.error {
+    background: rgba(239, 68, 68, 0.1);
+    border-color: rgba(239, 68, 68, 0.25);
+    color: var(--danger);
+  }
+}
+
+// ── Price Bar ──
+.price-bar {
+  display: flex;
+  align-items: center;
+  padding: 10px 14px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  margin-bottom: 16px;
+  gap: 12px;
+}
+
+.price-item {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  flex: 1;
+}
+
+.price-label {
+  font-size: 10px;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.price-value {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--gold);
+}
+
+.price-divider {
+  width: 1px;
+  height: 28px;
+  background: var(--border);
+}
+
+.refresh-btn {
+  background: none;
+  border: none;
+  color: var(--text-secondary);
+  font-size: 18px;
+  cursor: pointer;
+  padding: 4px;
+  display: flex;
+  align-items: center;
+
+  &:disabled {
+    opacity: 0.4;
+  }
+}
+
+// ── Section Headers ──
+.section-header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin: 16px 0 8px;
+
+  ion-icon {
+    color: var(--primary);
+    font-size: 18px;
+  }
+
+  h2 {
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--text-secondary);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    margin: 0;
+    flex: 1;
+  }
+
+  .add-btn {
+    --color: var(--primary);
+    font-size: 13px;
+    height: 28px;
+    margin: 0;
+  }
+}
+
+// ── Input Cards ──
+.input-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--card-radius);
+  margin-bottom: 8px;
+  box-shadow: none;
+
+  ion-card-content {
+    padding: 4px 12px;
+  }
+
+  &.gold-card {
+    ion-card-content {
+      padding: 0;
+    }
+  }
+}
+
+.amount-item {
+  --background: transparent;
+  --inner-padding-end: 0;
+  --padding-start: 0;
+  --min-height: 56px;
+
+  &::part(native) {
+    background: transparent;
+  }
+}
+
+.currency-flag {
+  font-size: 28px;
+  margin-right: 10px;
+  line-height: 1;
+}
+
+.currency-info {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  margin-right: 8px;
+  min-width: 70px;
+}
+
+.currency-code {
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--text-primary);
+}
+
+.currency-name {
+  font-size: 11px;
+  color: var(--text-secondary);
+}
+
+.amount-input {
+  --color: var(--text-primary);
+  --placeholder-color: var(--text-muted);
+  text-align: right;
+  font-size: 18px;
+  font-weight: 600;
+  --padding-end: 0;
+}
+
+.remove-btn {
+  --color: var(--danger);
+  margin-left: 4px;
+  margin-right: -8px;
+}
+
+.conversion-hint {
+  text-align: right;
+  font-size: 11px;
+  color: var(--primary);
+  padding: 0 0 8px 0;
+  font-weight: 500;
+}
+
+// ── Editable Rate Rows ──
+.rate-row,
+.price-edit-row {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 0 4px;
+  border-top: 1px solid var(--border);
+}
+
+.rate-icon {
+  font-size: 13px;
+  color: var(--text-muted);
+  flex-shrink: 0;
+}
+
+.rate-label {
+  font-size: 12px;
+  color: var(--text-secondary);
+  white-space: nowrap;
+}
+
+.rate-input {
+  --color: var(--gold);
+  --placeholder-color: var(--text-muted);
+  font-size: 13px;
+  font-weight: 600;
+  flex: 1;
+  min-width: 0;
+  text-align: right;
+  --padding-end: 2px;
+  --padding-start: 4px;
+  background: rgba(245, 158, 11, 0.06);
+  border-radius: 6px;
+}
+
+.unit-label {
+  color: var(--text-secondary);
+  font-size: 13px;
+  margin-left: 8px;
+}
+
+// ── Empty State ──
+.empty-currencies {
+  margin-bottom: 8px;
+
+  .add-currency-outline-btn {
+    --border-color: var(--primary);
+    --color: var(--primary);
+    --background: transparent;
+    --background-hover: var(--primary-glow);
+    --border-radius: 12px;
+    height: 52px;
+  }
+}
+
+// ── Gold Accordion ──
+.gold-header-item {
+  --background: transparent;
+  --inner-padding-end: 12px;
+  --padding-start: 12px;
+  --min-height: 56px;
+}
+
+.gold-karat-badge {
+  width: 36px;
+  height: 36px;
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 11px;
+  font-weight: 800;
+  margin-right: 12px;
+
+  &.k24 { background: linear-gradient(135deg, #f59e0b, #fcd34d); color: #1c1007; }
+  &.k21 { background: linear-gradient(135deg, #d97706, #f59e0b); color: #1c1007; }
+  &.k18 { background: linear-gradient(135deg, #b45309, #d97706); color: #fff8e1; }
+}
+
+.karat-price {
+  font-size: 11px;
+  color: var(--gold);
+  font-weight: 500;
+}
+
+.accordion-input {
+  padding: 0 12px;
+  background: rgba(255, 255, 255, 0.03);
+  border-top: 1px solid var(--border);
+}
+
+// ── Calculate Button ──
+.calculate-btn {
+  margin: 20px 0 8px;
+  height: 56px;
+  --background: linear-gradient(135deg, var(--primary), #059669);
+  --border-radius: 16px;
+  --color: white;
+  --box-shadow: 0 4px 20px var(--primary-glow);
+  font-size: 16px;
+  font-weight: 700;
+  letter-spacing: 0.3px;
+  transition: transform 0.1s ease;
+
+  &:active {
+    transform: scale(0.98);
+  }
+}
+
+// ── Results ──
+.results-section {
+  animation: fadeSlideIn 0.4s ease-out;
+}
+
+@keyframes fadeSlideIn {
+  from { opacity: 0; transform: translateY(20px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.result-divider {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin: 20px 0 12px;
+  color: var(--text-muted);
+  font-size: 12px;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+
+  &::before, &::after {
+    content: '';
+    flex: 1;
+    height: 1px;
+    background: var(--border);
+  }
+}
+
+// ── Wealth Summary Card ──
+.wealth-summary-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--card-radius);
+  margin-bottom: 12px;
+  box-shadow: none;
+
+  ion-card-title {
+    font-size: 16px;
+    color: var(--text-primary);
+  }
+
+  ion-card-subtitle {
+    font-size: 12px;
+    color: var(--text-secondary);
+  }
+}
+
+.wealth-row {
+  display: flex;
+  justify-content: space-between;
+  padding: 8px 0;
+  border-bottom: 1px solid var(--border);
+  font-size: 14px;
+  color: var(--text-secondary);
+
+  span:last-child {
+    color: var(--text-primary);
+    font-weight: 500;
+  }
+}
+
+.wealth-total {
+  display: flex;
+  justify-content: space-between;
+  padding: 12px 0 4px;
+  font-size: 15px;
+  font-weight: 700;
+
+  span:first-child { color: var(--text-secondary); }
+  span:last-child { color: var(--primary); }
+}
+
+.nisab-progress-container {
+  margin-top: 12px;
+}
+
+.nisab-header {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  margin-bottom: 6px;
+}
+
+.nisab-label {
+  font-size: 12px;
+  color: var(--text-secondary);
+  flex: 1;
+}
+
+.info-btn {
+  background: none;
+  border: none;
+  color: var(--text-muted);
+  font-size: 16px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  padding: 0;
+}
+
+.progress-track {
+  height: 6px;
+  background: var(--surface-elevated);
+  border-radius: 3px;
+  overflow: hidden;
+  margin-bottom: 4px;
+}
+
+.progress-fill {
+  height: 100%;
+  border-radius: 3px;
+  background: linear-gradient(90deg, var(--gold), #fcd34d);
+  transition: width 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+
+  &.above {
+    background: linear-gradient(90deg, var(--primary), #34d399);
+  }
+}
+
+.nisab-values {
+  display: flex;
+  justify-content: space-between;
+  font-size: 11px;
+  color: var(--text-muted);
+}
+
+// ── Zakat Result Cards ──
+.zakat-card {
+  border-radius: var(--card-radius);
+  margin-bottom: 12px;
+  box-shadow: none;
+
+  &.below-nisab {
+    background: linear-gradient(135deg, #0a2e1e, #0d3d27);
+    border: 1px solid rgba(16, 185, 129, 0.3);
+    text-align: center;
+    padding: 8px;
+  }
+
+  &.obligatory-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+  }
+
+  &.precautionary-card {
+    background: linear-gradient(135deg, var(--surface), #1a1f2e);
+    border: 1px solid var(--gold-glow);
+    box-shadow: 0 4px 20px rgba(245, 158, 11, 0.1);
+  }
+}
+
+.zakat-status-icon {
+  font-size: 42px;
+  margin-bottom: 8px;
+}
+
+.zakat-status-title {
+  font-size: 22px;
+  font-weight: 700;
+  color: var(--primary);
+  margin: 0 0 8px;
+}
+
+.zakat-status-text {
+  font-size: 14px;
+  color: var(--text-secondary);
+  line-height: 1.5;
+  margin-bottom: 8px;
+}
+
+.zakat-footnote {
+  font-size: 12px;
+  color: var(--text-muted);
+  font-style: italic;
+}
+
+.card-icon-title {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.card-icon-circle {
+  width: 44px;
+  height: 44px;
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 22px;
+  flex-shrink: 0;
+
+  &.min {
+    background: var(--primary-glow);
+    color: var(--primary);
+  }
+
+  &.hedge {
+    background: var(--gold-glow);
+    color: var(--gold);
+  }
+}
+
+.zakat-amount {
+  font-size: 36px;
+  font-weight: 800;
+  color: var(--primary);
+  line-height: 1;
+  margin: 12px 0 2px;
+
+  &.hedge {
+    background: linear-gradient(135deg, var(--gold), #fcd34d);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+}
+
+.zakat-currency {
+  font-size: 14px;
+  color: var(--text-secondary);
+  font-weight: 600;
+  margin-bottom: 10px;
+}
+
+.card-note {
+  font-size: 12px;
+  color: var(--text-muted);
+  line-height: 1.5;
+}
+
+.link-btn {
+  background: none;
+  border: none;
+  color: var(--primary);
+  cursor: pointer;
+  font-size: inherit;
+  padding: 0;
+  text-decoration: underline;
+}
+
+// ── Modal ──
+.modal-flag {
+  font-size: 24px;
+}
+
+// ── Bottom Padding ──
+.bottom-padding {
+  height: 40px;
+}
+
+// ── Ion Overrides ──
+ion-content {
+  --background: var(--page-bg);
+}
+
+ion-card {
+  --background: transparent;
+  margin: 0 0 8px 0;
+}
+
+ion-accordion {
+  background: transparent;
+  &::part(content) {
+    background: rgba(255,255,255,0.02);
+  }
+}
+
+ion-accordion-group {
+  border-radius: 0;
+}
+
+ion-modal {
+  --background: #161b22;
+}
+
+ion-modal ion-toolbar {
+  --background: #161b22;
+  --color: #e6edf3;
+}
+
+ion-modal ion-searchbar {
+  --background: #1c2233;
+  --color: #e6edf3;
+}
+
+ion-modal ion-item {
+  --background: transparent;
+  --color: #e6edf3;
+  --border-color: rgba(255,255,255,0.08);
+}
