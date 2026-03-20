@@ -51,7 +51,9 @@ import { SettingsService } from '../../core/services/settings.service';
 import { ZakatCalculatorService } from '../../core/services/zakat-calculator.service';
 import { StorageService } from '../../core/services/storage.service';
 import { TranslationService } from '../../core/services/translation.service';
-import { CurrencyEntry, GoldAssets, ZakatResult, POPULAR_CURRENCIES, CurrencyInfo, MarketPrices, GoldPriceRange } from '../../core/models/zakat.models';
+import { HawlService } from '../../core/services/hawl.service';
+import { HijriService } from '../../core/services/hijri.service';
+import { CurrencyEntry, GoldAssets, ZakatResult, POPULAR_CURRENCIES, CurrencyInfo, MarketPrices, GoldPriceRange, HawlState } from '../../core/models/zakat.models';
 
 interface CurrencyEntryWithRate extends CurrencyEntry {
   egpPerUnit: number;
@@ -115,6 +117,12 @@ export class HomePage implements OnInit, OnDestroy {
   // Gold price ranges (from APIs)
   goldRanges: { '24k': GoldPriceRange; '21k': GoldPriceRange; '18k': GoldPriceRange } | null = null;
 
+  // Hawl state
+  hawlState: HawlState = { record: null, isComplete: false, elapsedDays: 0, remainingDays: 354, progressFraction: 0 };
+
+  // Hijri date
+  hijriToday = '';
+
   // Currency picker
   isCurrencyModalOpen = false;
   currencySearch = '';
@@ -145,6 +153,8 @@ export class HomePage implements OnInit, OnDestroy {
     private zakatService: ZakatCalculatorService,
     private storageService: StorageService,
     private alertCtrl: AlertController,
+    private hawlService: HawlService,
+    private hijriService: HijriService,
     public ts: TranslationService,
   ) {
     addIcons({
@@ -159,7 +169,16 @@ export class HomePage implements OnInit, OnDestroy {
     // 1. Restore saved state FIRST (before API prices arrive)
     this.restoreState();
 
-    // 2. Subscribe to API prices
+    // 2. Compute today's Hijri date
+    const offset = this.settingsService.hijriDayOffset;
+    this.hijriToday = this.hijriService.todayHijri(offset).formatted(this.ts.currentLanguage);
+
+    // 3. Subscribe to Hawl state
+    this.hawlService.hawlState$
+      .pipe(takeUntil(this.destroy$))
+      .subscribe(s => this.hawlState = s);
+
+    // 4. Subscribe to API prices
     this.priceService.prices$
       .pipe(takeUntil(this.destroy$))
       .subscribe((prices) => {
@@ -223,6 +242,9 @@ export class HomePage implements OnInit, OnDestroy {
     if (saved.hedgePercentage != null) {
       this.settingsService.setHedgePercentage(saved.hedgePercentage);
     }
+    if (saved.hijriDayOffset != null) {
+      this.settingsService.setHijriDayOffset(saved.hijriDayOffset);
+    }
   }
 
   private saveState(): void {
@@ -234,6 +256,7 @@ export class HomePage implements OnInit, OnDestroy {
       goldPrice21k: this.goldPrice21k,
       goldPrice18k: this.goldPrice18k,
       hedgePercentage: this.settingsService.hedgePercentage,
+      hijriDayOffset:  this.settingsService.hijriDayOffset,
     });
 
     // Flash "Saved" indicator briefly
@@ -372,6 +395,18 @@ export class HomePage implements OnInit, OnDestroy {
     this.router.navigate(['/settings']);
   }
 
+  goToHawl(): void {
+    this.router.navigate(['/hawl']);
+  }
+
+  startHawlFromResult(): void {
+    if (this.result?.isAboveNisab) {
+      this.hawlService.startHawl(
+        this.result.nisabThresholdEGP,
+        this.result.totalWealthEGP,
+      );
+    }
+  }
   // ── Helpers ────────────────────────────────────────────────
 
   formatEGP(amount: number): string {

@@ -16,4 +16,9 @@ export const routes: Routes = [
     loadComponent: () =>
       import('./features/settings/settings.page').then((m) => m.SettingsPage),
   },
+  {
+    path: 'hawl',
+    loadComponent: () =>
+      import('./features/hawl/hawl.page').then((m) => m.HawlPage),
+  },
 ];

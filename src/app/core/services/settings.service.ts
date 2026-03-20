@@ -5,13 +5,18 @@ const DEFAULT_HEDGE_PERCENTAGE = 5;
 const MIN_HEDGE = 1;
 const MAX_HEDGE = 10;
 
+const MIN_HIJRI_OFFSET = -2;
+const MAX_HIJRI_OFFSET =  2;
+
 @Injectable({
   providedIn: 'root',
 })
 export class SettingsService {
   private readonly _hedgePercentage$ = new BehaviorSubject<number>(DEFAULT_HEDGE_PERCENTAGE);
-
   readonly hedgePercentage$ = this._hedgePercentage$.asObservable();
+
+  private readonly _hijriDayOffset$ = new BehaviorSubject<number>(0);
+  readonly hijriDayOffset$ = this._hijriDayOffset$.asObservable();
 
   get hedgePercentage(): number {
     return this._hedgePercentage$.getValue();
@@ -22,6 +27,17 @@ export class SettingsService {
     this._hedgePercentage$.next(clamped);
   }
 
+  get hijriDayOffset(): number {
+    return this._hijriDayOffset$.getValue();
+  }
+
+  setHijriDayOffset(value: number): void {
+    const clamped = Math.max(MIN_HIJRI_OFFSET, Math.min(MAX_HIJRI_OFFSET, Math.round(value)));
+    this._hijriDayOffset$.next(clamped);
+  }
+
   get minHedge(): number { return MIN_HEDGE; }
   get maxHedge(): number { return MAX_HEDGE; }
+  get minHijriOffset(): number { return MIN_HIJRI_OFFSET; }
+  get maxHijriOffset(): number { return MAX_HIJRI_OFFSET; }
 }

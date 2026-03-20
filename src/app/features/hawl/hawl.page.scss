@@ -1,0 +1,277 @@
+:host {
+  --ring-color-progress: #c9a84c;
+  --ring-color-complete: #2ecc71;
+  --ring-color-track:    rgba(255, 255, 255, 0.08);
+}
+
+// ── Page background ───────────────────────────────────────────────────────
+ion-header ion-toolbar {
+  --background: transparent;
+  --border-color: transparent;
+}
+
+.hawl-content {
+  --background: linear-gradient(160deg, #0f1f2e 0%, #1a2f45 50%, #0d1821 100%);
+}
+
+// ── Hijri date chip ───────────────────────────────────────────────────────
+.hijri-chip {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  margin: 8px auto 20px;
+  padding: 6px 18px;
+  width: fit-content;
+  background: rgba(201, 168, 76, 0.12);
+  border: 1px solid rgba(201, 168, 76, 0.35);
+  border-radius: 20px;
+  color: #c9a84c;
+  font-size: 0.85rem;
+  font-weight: 500;
+  letter-spacing: 0.03em;
+
+  ion-icon {
+    font-size: 1rem;
+  }
+}
+
+// ── SVG Ring ─────────────────────────────────────────────────────────────
+.ring-wrapper {
+  position: relative;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin: 0 auto 24px;
+  width: 220px;
+  height: 220px;
+}
+
+.progress-ring {
+  width: 220px;
+  height: 220px;
+  filter: drop-shadow(0 0 16px rgba(201, 168, 76, 0.25));
+}
+
+.ring-track {
+  stroke: var(--ring-color-track);
+}
+
+.ring-fill {
+  stroke: var(--ring-color-progress);
+  transition: stroke-dashoffset 0.8s cubic-bezier(0.4, 0, 0.2, 1),
+              stroke 0.4s ease;
+
+  &.ring-complete {
+    stroke: var(--ring-color-complete);
+    filter: drop-shadow(0 0 8px rgba(46, 204, 113, 0.6));
+    animation: pulse-green 2s ease-in-out infinite;
+  }
+}
+
+@keyframes pulse-green {
+  0%, 100% { opacity: 1; }
+  50%       { opacity: 0.7; }
+}
+
+.ring-pct-text {
+  font-size: 2rem;
+  font-weight: 700;
+  fill: #ffffff;
+  font-family: 'Inter', sans-serif;
+}
+
+.ring-days-text {
+  font-size: 0.85rem;
+  fill: rgba(255, 255, 255, 0.65);
+  font-family: 'Inter', sans-serif;
+}
+
+.ring-label-text {
+  font-size: 0.7rem;
+  fill: rgba(255, 255, 255, 0.4);
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  font-family: 'Inter', sans-serif;
+}
+
+.complete-badge {
+  position: absolute;
+  top: 0;
+  right: 0;
+  width: 48px;
+  height: 48px;
+  background: var(--ring-color-complete);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 0 20px rgba(46, 204, 113, 0.5);
+  animation: bounce-in 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+
+  ion-icon {
+    font-size: 1.6rem;
+    color: #fff;
+  }
+}
+
+@keyframes bounce-in {
+  from { transform: scale(0); opacity: 0; }
+  to   { transform: scale(1); opacity: 1; }
+}
+
+// ── Status Card ───────────────────────────────────────────────────────────
+.status-card {
+  border-radius: 16px;
+  margin: 0 0 16px;
+  backdrop-filter: blur(10px);
+
+  &.card-not-started {
+    background: rgba(255, 255, 255, 0.04);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+  }
+
+  &.card-in-progress {
+    background: rgba(201, 168, 76, 0.08);
+    border: 1px solid rgba(201, 168, 76, 0.3);
+  }
+
+  &.card-complete {
+    background: rgba(46, 204, 113, 0.1);
+    border: 1px solid rgba(46, 204, 113, 0.4);
+    box-shadow: 0 0 24px rgba(46, 204, 113, 0.15);
+    animation: glow-green 2s ease-in-out infinite alternate;
+  }
+
+  ion-card-title {
+    font-size: 1.1rem;
+    font-weight: 700;
+    color: #fff;
+  }
+
+  ion-card-subtitle {
+    font-size: 0.75rem;
+    color: rgba(255, 255, 255, 0.45);
+    margin-top: 2px;
+  }
+}
+
+@keyframes glow-green {
+  from { box-shadow: 0 0 16px rgba(46, 204, 113, 0.1); }
+  to   { box-shadow: 0 0 32px rgba(46, 204, 113, 0.3); }
+}
+
+.status-desc {
+  color: rgba(255, 255, 255, 0.6);
+  font-size: 0.88rem;
+  line-height: 1.55;
+  margin: 4px 0 0;
+}
+
+.complete-desc {
+  color: #2ecc71;
+  font-size: 0.88rem;
+  font-weight: 500;
+  line-height: 1.5;
+  margin-top: 8px;
+}
+
+.counter-row {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  margin-top: 8px;
+}
+
+.counter-divider {
+  width: 1px;
+  height: 40px;
+  background: rgba(255, 255, 255, 0.12);
+}
+
+.counter-box {
+  flex: 1;
+  text-align: center;
+
+  .counter-number {
+    font-size: 2rem;
+    font-weight: 800;
+    color: #c9a84c;
+    line-height: 1;
+
+    &.remaining {
+      color: rgba(255, 255, 255, 0.8);
+    }
+  }
+
+  .counter-label {
+    font-size: 0.72rem;
+    color: rgba(255, 255, 255, 0.45);
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    margin-top: 4px;
+  }
+}
+
+// ── Summary Card ──────────────────────────────────────────────────────────
+.summary-card {
+  border-radius: 14px;
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  margin: 0 0 20px;
+
+  ion-card-content {
+    padding-top: 12px;
+    padding-bottom: 12px;
+  }
+}
+
+.summary-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 8px 0;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+
+  &:last-child { border-bottom: none; }
+
+  .summary-label {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 0.82rem;
+    color: rgba(255, 255, 255, 0.5);
+
+    ion-icon { font-size: 0.9rem; }
+  }
+
+  .summary-value {
+    font-size: 0.88rem;
+    font-weight: 600;
+    color: rgba(255, 255, 255, 0.85);
+  }
+}
+
+// ── Buttons ───────────────────────────────────────────────────────────────
+.action-btn {
+  border-radius: 14px;
+  font-weight: 700;
+  letter-spacing: 0.03em;
+  height: 52px;
+  margin: 0 0 12px;
+}
+
+.start-btn {
+  --background: linear-gradient(135deg, #c9a84c 0%, #e8c96a 100%);
+  --color: #0f1f2e;
+  box-shadow: 0 6px 24px rgba(201, 168, 76, 0.35);
+}
+
+.reset-btn {
+  --border-color: rgba(235, 87, 87, 0.5);
+  --color: #eb5757;
+}
+
+.bottom-padding {
+  height: 40px;
+}

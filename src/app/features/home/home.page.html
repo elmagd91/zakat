@@ -6,6 +6,10 @@
         <div class="header-titles">
           <p class="header-sub">{{ ts.t('appSubtitle') }}</p>
           <h1 class="header-main">{{ ts.t('appTitle') }}</h1>
+          <!-- Hijri date chip -->
+          <div class="hijri-date-chip" *ngIf="hijriToday">
+            <span>{{ hijriToday }}</span>
+          </div>
         </div>
       </div>
       <div class="header-actions">
@@ -318,6 +322,39 @@
   <div class="results-section" *ngIf="result">
 
     <div class="result-divider"><span>{{ ts.t('yourResults') }}</span></div>
+
+    <!-- ─── Hawl Status Banner ─── -->
+    <!-- Not started + above Nisab → prompt to start -->
+    <div class="hawl-banner hawl-banner--prompt" *ngIf="!hawlState.record && result.isAboveNisab">
+      <div class="hawl-banner-text">
+        <ion-icon name="time-outline"></ion-icon>
+        <span>{{ ts.t('hawlNotStarted') }}</span>
+      </div>
+      <div class="hawl-banner-actions">
+        <button class="hawl-chip-btn hawl-chip-start" (click)="startHawlFromResult()">{{ ts.t('startHawl') }}</button>
+      </div>
+    </div>
+
+    <!-- In progress -->
+    <div class="hawl-banner hawl-banner--progress" *ngIf="hawlState.record && !hawlState.isComplete">
+      <div class="hawl-banner-text">
+        <ion-icon name="time-outline"></ion-icon>
+        <span>{{ ts.tr('hawlBannerProgress', { days: hawlState.remainingDays.toString() }) }}</span>
+      </div>
+      <div class="hawl-progress-mini">
+        <div class="hawl-progress-fill" [style.width.%]="hawlState.progressFraction * 100"></div>
+      </div>
+      <button class="hawl-chip-btn" (click)="goToHawl()">{{ ts.t('viewHawl') }}</button>
+    </div>
+
+    <!-- Complete -->
+    <div class="hawl-banner hawl-banner--complete" *ngIf="hawlState.isComplete">
+      <div class="hawl-banner-text">
+        <ion-icon name="checkmark-circle-outline"></ion-icon>
+        <span>{{ ts.t('hawlBannerDue') }}</span>
+      </div>
+      <button class="hawl-chip-btn" (click)="goToHawl()">{{ ts.t('viewHawl') }}</button>
+    </div>
 
     <!-- Wealth Summary -->
     <ion-card class="wealth-summary-card">

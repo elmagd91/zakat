@@ -10,6 +10,7 @@ export interface PersistedState {
   goldPrice21k: number;
   goldPrice18k: number;
   hedgePercentage?: number;
+  hijriDayOffset?: number;
 }
 
 @Injectable({

@@ -98,6 +98,33 @@ export interface Translations {
   hedgeConservative: string;
   hedgeBalanced: string;
   hedgeGenerous: string;
+
+  // ── Hawl tracking ────────────────────────────────────────────────────
+  hawlTitle: string;
+  hawlSubtitle: string;
+  hawlNotStarted: string;
+  hawlNotStartedDesc: string;
+  startHawl: string;
+  hawlInProgress: string;
+  hawlComplete: string;
+  hawlCompleteDesc: string;
+  daysElapsed: string;
+  daysRemaining: string;
+  startedOn: string;
+  nisabAtStart: string;
+  wealthAtStart: string;
+  resetHawl: string;
+  resetHawlTitle: string;
+  resetHawlConfirm: string;
+  hawlBannerProgress: string;  // takes {days} placeholder
+  hawlBannerDue: string;
+  viewHawl: string;
+
+  // ── Hijri calendar ───────────────────────────────────────────────────
+  todayHijri: string;
+  hijriDayOffset: string;
+  hijriDayOffsetSub: string;
+  hijriSectionHeader: string;
 }
 
 export const TRANSLATIONS: Record<Language, Translations> = {
@@ -199,6 +226,33 @@ export const TRANSLATIONS: Record<Language, Translations> = {
     hedgeConservative: 'Conservative buffer. Best for stable economic conditions.',
     hedgeBalanced: 'Balanced buffer. Recommended for most situations.',
     hedgeGenerous: 'Generous buffer. Ideal during high inflation or market volatility.',
+
+    // Hawl tracking
+    hawlTitle: 'Hawl Tracker',
+    hawlSubtitle: 'One lunar year period (354 days)',
+    hawlNotStarted: 'No Hawl Recorded',
+    hawlNotStartedDesc: 'Once your wealth is above Nisab, tap "Start Hawl" to begin the one-year countdown.',
+    startHawl: 'Start Hawl',
+    hawlInProgress: 'Hawl In Progress',
+    hawlComplete: 'Hawl Complete — Zakat is Due!',
+    hawlCompleteDesc: 'Your wealth has remained above Nisab for a full lunar year. Zakat is now obligatory.',
+    daysElapsed: 'days elapsed',
+    daysRemaining: 'days remaining',
+    startedOn: 'Started on',
+    nisabAtStart: 'Nisab at start',
+    wealthAtStart: 'Wealth at start',
+    resetHawl: 'Reset Hawl',
+    resetHawlTitle: 'Reset Hawl?',
+    resetHawlConfirm: 'This will delete your Hawl record. Are you sure?',
+    hawlBannerProgress: 'Hawl: {days} days left',
+    hawlBannerDue: '⚠️ Hawl complete — Zakat is due!',
+    viewHawl: 'View Hawl',
+
+    // Hijri calendar
+    todayHijri: 'Today (Hijri)',
+    hijriDayOffset: 'Hijri Day Adjustment',
+    hijriDayOffsetSub: 'Correct for local moon-sighting (±1-2 days)',
+    hijriSectionHeader: 'Hijri Calendar',
   },
 
   ar: {
@@ -299,5 +353,32 @@ export const TRANSLATIONS: Record<Language, Translations> = {
     hedgeConservative: 'هامش محافظ. الأنسب للأوضاع الاقتصادية المستقرة.',
     hedgeBalanced: 'هامش متوازن. موصى به لمعظم الحالات.',
     hedgeGenerous: 'هامش سخي. مثالي في أوقات التضخم المرتفع أو تقلبات السوق.',
+
+    // Hawl tracking
+    hawlTitle: 'متابعة الحول',
+    hawlSubtitle: 'حول هجري كامل (354 يوماً)',
+    hawlNotStarted: 'لم يُسجَّل حول',
+    hawlNotStartedDesc: 'بمجرد بلوغ ثروتك النصاب، اضغط “ابدأ الحول” لبدء العد التنازلي.',
+    startHawl: 'ابدأ الحول',
+    hawlInProgress: 'الحول جارٍ',
+    hawlComplete: 'اكتمل الحول — الزكاة واجبة!',
+    hawlCompleteDesc: 'ظلَّت ثروتك فوق النصاب حولاً هجرياً كاملاً. وجبت الزكاة.',
+    daysElapsed: 'يوماً مضى',
+    daysRemaining: 'يوماً متبقياً',
+    startedOn: 'بدأ في',
+    nisabAtStart: 'النصاب عند البدء',
+    wealthAtStart: 'الثروة عند البدء',
+    resetHawl: 'إعادة تعيين الحول',
+    resetHawlTitle: 'إعادة تعيين الحول؟',
+    resetHawlConfirm: 'سيؤدي ذلك إلى حذف سجل الحول. هل أنت متأكد؟',
+    hawlBannerProgress: 'الحول: {days} يوماً متبقياً',
+    hawlBannerDue: '⚠️ اكتمل الحول — الزكاة واجبة!',
+    viewHawl: 'عرض الحول',
+
+    // Hijri calendar
+    todayHijri: 'اليوم (هجري)',
+    hijriDayOffset: 'تعديل اليوم الهجري',
+    hijriDayOffsetSub: 'تصحيح لرؤية الهلال (±1-2 يوم)',
+    hijriSectionHeader: 'التقويم الهجري',
   },
 };

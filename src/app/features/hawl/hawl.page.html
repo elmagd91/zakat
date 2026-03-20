@@ -1,0 +1,149 @@
+<ion-header class="ion-no-border">
+  <ion-toolbar>
+    <ion-buttons slot="start">
+      <ion-button fill="clear" (click)="goBack()">
+        <ion-icon slot="icon-only" name="arrow-back-outline"></ion-icon>
+      </ion-button>
+    </ion-buttons>
+    <ion-title>{{ ts.t('hawlTitle') }}</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content class="ion-padding hawl-content">
+
+  <!-- Hijri Date Chip -->
+  <div class="hijri-chip">
+    <ion-icon name="calendar-outline"></ion-icon>
+    <span>{{ hijriDateStr }}</span>
+  </div>
+
+  <!-- ── SVG Progress Ring ── -->
+  <div class="ring-wrapper">
+    <svg class="progress-ring" viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">
+      <!-- Background track -->
+      <circle
+        class="ring-track"
+        cx="100" cy="100"
+        [attr.r]="RADIUS"
+        fill="none"
+        stroke-width="14"
+      />
+      <!-- Progress arc -->
+      <circle
+        class="ring-fill"
+        [class.ring-complete]="hawlState.isComplete"
+        cx="100" cy="100"
+        [attr.r]="RADIUS"
+        fill="none"
+        stroke-width="14"
+        stroke-linecap="round"
+        [attr.stroke-dasharray]="CIRCUMFERENCE"
+        [attr.stroke-dashoffset]="strokeDashoffset"
+        transform="rotate(-90 100 100)"
+      />
+      <!-- Center text -->
+      <text x="100" y="88" text-anchor="middle" class="ring-pct-text">
+        {{ (hawlState.progressFraction * 100).toFixed(0) }}%
+      </text>
+      <text x="100" y="108" text-anchor="middle" class="ring-days-text">
+        <tspan *ngIf="hawlState.record">{{ hawlState.elapsedDays }} / 354</tspan>
+        <tspan *ngIf="!hawlState.record">0 / 354</tspan>
+      </text>
+      <text x="100" y="124" text-anchor="middle" class="ring-label-text">days</text>
+    </svg>
+
+    <!-- Completion pulse badge -->
+    <div class="complete-badge" *ngIf="hawlState.isComplete">
+      <ion-icon name="checkmark-circle-outline"></ion-icon>
+    </div>
+  </div>
+
+  <!-- ── Status Card ── -->
+  <ion-card class="status-card"
+    [class.card-not-started]="!hawlState.record"
+    [class.card-in-progress]="hawlState.record && !hawlState.isComplete"
+    [class.card-complete]="hawlState.isComplete">
+
+    <ion-card-header>
+      <ion-card-title>
+        <ng-container *ngIf="!hawlState.record">{{ ts.t('hawlNotStarted') }}</ng-container>
+        <ng-container *ngIf="hawlState.record && !hawlState.isComplete">{{ ts.t('hawlInProgress') }}</ng-container>
+        <ng-container *ngIf="hawlState.isComplete">{{ ts.t('hawlComplete') }}</ng-container>
+      </ion-card-title>
+      <ion-card-subtitle>{{ ts.t('hawlSubtitle') }}</ion-card-subtitle>
+    </ion-card-header>
+
+    <ion-card-content>
+      <!-- Not started -->
+      <p *ngIf="!hawlState.record" class="status-desc">{{ ts.t('hawlNotStartedDesc') }}</p>
+
+      <!-- In progress / complete counters -->
+      <div class="counter-row" *ngIf="hawlState.record">
+        <div class="counter-box">
+          <div class="counter-number">{{ hawlState.elapsedDays }}</div>
+          <div class="counter-label">{{ ts.t('daysElapsed') }}</div>
+        </div>
+        <div class="counter-divider"></div>
+        <div class="counter-box">
+          <div class="counter-number remaining">{{ hawlState.remainingDays }}</div>
+          <div class="counter-label">{{ ts.t('daysRemaining') }}</div>
+        </div>
+      </div>
+
+      <!-- Complete message -->
+      <p *ngIf="hawlState.isComplete" class="complete-desc">{{ ts.t('hawlCompleteDesc') }}</p>
+    </ion-card-content>
+  </ion-card>
+
+  <!-- ── Snapshot Summary Card (if started) ── -->
+  <ion-card class="summary-card" *ngIf="hawlState.record">
+    <ion-card-content>
+      <div class="summary-row">
+        <span class="summary-label">
+          <ion-icon name="calendar-outline"></ion-icon>
+          {{ ts.t('startedOn') }}
+        </span>
+        <span class="summary-value">{{ formatDate(hawlState.record!.startDate) }}</span>
+      </div>
+      <div class="summary-row" *ngIf="hawlState.record!.nisabAtStart > 0">
+        <span class="summary-label">
+          <ion-icon name="leaf-outline"></ion-icon>
+          {{ ts.t('nisabAtStart') }}
+        </span>
+        <span class="summary-value">{{ formatEGP(hawlState.record!.nisabAtStart) }} EGP</span>
+      </div>
+      <div class="summary-row" *ngIf="hawlState.record!.wealthAtStart > 0">
+        <span class="summary-label">
+          <ion-icon name="time-outline"></ion-icon>
+          {{ ts.t('wealthAtStart') }}
+        </span>
+        <span class="summary-value">{{ formatEGP(hawlState.record!.wealthAtStart) }} EGP</span>
+      </div>
+    </ion-card-content>
+  </ion-card>
+
+  <!-- ── Action Buttons ── -->
+  <ion-button
+    *ngIf="!hawlState.record"
+    expand="block"
+    class="action-btn start-btn"
+    (click)="startHawl()"
+  >
+    <ion-icon slot="start" name="time-outline"></ion-icon>
+    {{ ts.t('startHawl') }}
+  </ion-button>
+
+  <ion-button
+    *ngIf="hawlState.record"
+    expand="block"
+    fill="outline"
+    color="danger"
+    class="action-btn reset-btn"
+    (click)="confirmReset()"
+  >
+    <ion-icon slot="start" name="refresh-outline"></ion-icon>
+    {{ ts.t('resetHawl') }}
+  </ion-button>
+
+  <div class="bottom-padding"></div>
+</ion-content>

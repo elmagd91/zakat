@@ -84,3 +84,36 @@ export const POPULAR_CURRENCIES: CurrencyInfo[] = [
   { code: 'NZD', name: 'New Zealand Dollar' },
   { code: 'ZAR', name: 'South African Rand' },
 ];
+
+// ── Hawl (one-year period) tracking ────────────────────────────────────────
+
+/** Number of days in an Islamic lunar year (Hawl) */
+export const HAWL_DAYS = 354;
+
+/** Saved snapshot of when a Hawl period was started */
+export interface HawlRecord {
+  startDate: string;     // ISO 8601 date string (Date.toISOString())
+  nisabAtStart: number;  // Nisab threshold in EGP at start time
+  wealthAtStart: number; // Total wealth in EGP at start time
+}
+
+/** Computed state derived from HawlRecord + current date */
+export interface HawlState {
+  record: HawlRecord | null;
+  isComplete: boolean;
+  elapsedDays: number;
+  remainingDays: number;
+  progressFraction: number; // 0–1
+}
+
+// ── Hijri calendar ───────────────────────────────────────────────────────────
+
+export interface HijriDate {
+  day: number;
+  month: number;       // 1-indexed (1 = Muharram)
+  year: number;
+  monthNameEn: string; // e.g. "Ramadan"
+  monthNameAr: string; // e.g. "رمضان"
+  /** Returns a display string for the given language */
+  formatted(lang: 'en' | 'ar'): string;
+}
