@@ -1,30 +1,49 @@
 <ion-header class="ion-no-border">
   <ion-toolbar>
     <ion-buttons slot="start">
-      <ion-back-button defaultHref="/home" text="Back"></ion-back-button>
+      <ion-back-button defaultHref="/home" [text]="ts.t('back')"></ion-back-button>
     </ion-buttons>
-    <ion-title>Settings</ion-title>
+    <ion-title>{{ ts.t('settingsTitle') }}</ion-title>
   </ion-toolbar>
 </ion-header>
 
 <ion-content class="ion-padding">
 
-  <!-- Hedge Buffer -->
+  <!-- ─── Language ─── -->
+  <div class="section-header">
+    <ion-icon name="language-outline"></ion-icon>
+    <h2>{{ ts.t('languageSectionHeader') }}</h2>
+  </div>
+
+  <ion-card class="settings-card">
+    <ion-card-content>
+      <div class="lang-toggle">
+        <button [class.active]="ts.currentLanguage === 'en'" (click)="setLanguage('en')">
+          🇬🇧 English
+        </button>
+        <button [class.active]="ts.currentLanguage === 'ar'" (click)="setLanguage('ar')">
+          🇸🇦 عربي
+        </button>
+      </div>
+    </ion-card-content>
+  </ion-card>
+
+  <!-- ─── Hedge Buffer ─── -->
   <div class="section-header">
     <ion-icon name="shield-checkmark-outline"></ion-icon>
-    <h2>Zakat Hedge Buffer</h2>
+    <h2>{{ ts.t('hedgeBufferSection') }}</h2>
   </div>
 
   <ion-card class="settings-card">
     <ion-card-header>
-      <ion-card-title>Precautionary Buffer</ion-card-title>
-      <ion-card-subtitle>Applied to your total wealth before Zakat calculation</ion-card-subtitle>
+      <ion-card-title>{{ ts.t('precautionaryBuffer') }}</ion-card-title>
+      <ion-card-subtitle>{{ ts.t('precautionaryBufferSub') }}</ion-card-subtitle>
     </ion-card-header>
     <ion-card-content>
 
       <div class="hedge-display">
         <div class="hedge-value">{{ hedgePercentage }}%</div>
-        <div class="hedge-label">Buffer</div>
+        <div class="hedge-label">{{ ts.t('buffer') }}</div>
       </div>
 
       <ion-range
@@ -50,53 +69,38 @@
     </ion-card-content>
   </ion-card>
 
-  <!-- About Hedge -->
+  <!-- ─── About Hedge ─── -->
   <div class="section-header">
     <ion-icon name="leaf-outline"></ion-icon>
-    <h2>About the Hedge</h2>
+    <h2>{{ ts.t('aboutHedge') }}</h2>
   </div>
 
   <ion-card class="info-card">
     <ion-card-content>
-      <h3>What is the Hedge Buffer?</h3>
-      <p>
-        Gold and currency prices fluctuate constantly. The Precautionary Zakat
-        adds a buffer percentage to your total wealth before calculating
-        the 2.5% Zakat obligation.
-      </p>
-      <p>
-        This ensures you pay Zakat on a slightly inflated estimate,
-        providing <strong>peace of mind</strong> that your full obligation
-        is covered even if prices change during the year.
-      </p>
+      <h3>{{ ts.t('whatIsHedge') }}</h3>
+      <p>{{ ts.t('hedgeDesc1') }}</p>
+      <p>{{ ts.t('hedgeDesc2') }}</p>
       <div class="formula-box">
-        <p class="formula-title">Formula</p>
-        <p class="formula">Hedge Zakat = Total Wealth × (1 + Buffer%) × 2.5%</p>
+        <p class="formula-title">{{ ts.t('formula') }}</p>
+        <p class="formula">{{ ts.t('formulaValue') }}</p>
       </div>
     </ion-card-content>
   </ion-card>
 
-  <!-- About Nisab -->
+  <!-- ─── About Nisab ─── -->
   <div class="section-header">
     <ion-icon name="information-circle-outline"></ion-icon>
-    <h2>About Nisab</h2>
+    <h2>{{ ts.t('aboutNisab') }}</h2>
   </div>
 
   <ion-card class="info-card">
     <ion-card-content>
-      <h3>What is Nisab?</h3>
-      <p>
-        The Nisab is the minimum threshold of wealth that makes Zakat
-        obligatory. It is equivalent to <strong>85 grams of pure gold (24K)</strong>.
-      </p>
-      <p>
-        If your total wealth is below the Nisab, no Zakat is due.
-        Zakat becomes obligatory after holding wealth above the Nisab
-        for a full lunar year (Hawl).
-      </p>
+      <h3>{{ ts.t('whatIsNisab') }}</h3>
+      <p>{{ ts.t('nisabDesc1') }}</p>
+      <p>{{ ts.t('nisabDesc2') }}</p>
       <div class="nisab-note">
         <ion-icon name="information-circle-outline"></ion-icon>
-        <p>This calculator does not track Hawl (one-year period). Please consult a scholar for full Zakat guidance.</p>
+        <p>{{ ts.t('nisabNote') }}</p>
       </div>
     </ion-card-content>
   </ion-card>

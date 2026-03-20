@@ -24,9 +24,12 @@ import {
   shieldCheckmarkOutline,
   informationCircleOutline,
   leafOutline,
+  languageOutline,
 } from 'ionicons/icons';
 
 import { SettingsService } from '../../core/services/settings.service';
+import { TranslationService } from '../../core/services/translation.service';
+import { Language } from '../../core/i18n/translations';
 
 @Component({
   selector: 'app-settings',
@@ -61,16 +64,17 @@ export class SettingsPage implements OnInit, OnDestroy {
 
   get hedgeExplanation(): string {
     const h = this.hedgePercentage;
-    if (h <= 3) return 'Conservative buffer. Best for stable economic conditions.';
-    if (h <= 6) return 'Balanced buffer. Recommended for most situations.';
-    return 'Generous buffer. Ideal during high inflation or market volatility.';
+    if (h <= 3) return this.ts.t('hedgeConservative');
+    if (h <= 6) return this.ts.t('hedgeBalanced');
+    return this.ts.t('hedgeGenerous');
   }
 
   constructor(
     private router: Router,
     private settingsService: SettingsService,
+    public ts: TranslationService,
   ) {
-    addIcons({ arrowBackOutline, shieldCheckmarkOutline, informationCircleOutline, leafOutline });
+    addIcons({ arrowBackOutline, shieldCheckmarkOutline, informationCircleOutline, leafOutline, languageOutline });
   }
 
   ngOnInit(): void {
@@ -82,6 +86,10 @@ export class SettingsPage implements OnInit, OnDestroy {
   ngOnDestroy(): void {
     this.destroy$.next();
     this.destroy$.complete();
+  }
+
+  setLanguage(lang: Language): void {
+    this.ts.setLanguage(lang);
   }
 
   onHedgeChange(event: CustomEvent): void {

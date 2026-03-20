@@ -15,13 +15,13 @@ export class ZakatCalculatorService {
 
   /**
    * Convert a foreign currency amount to EGP.
-   * exchangeRates[code] = X units of code per 1 EGP
-   * So: amountEGP = foreignAmount / exchangeRates[code]
+   * exchangeRates[code] = EGP per 1 unit of that currency (e.g. USD=52.4)
+   * So: amountEGP = foreignAmount * exchangeRates[code]
    */
   convertCurrencyToEGP(amount: number, currencyCode: string, exchangeRates: Record<string, number>): number {
     const rate = exchangeRates[currencyCode];
     if (!rate || rate === 0) return 0;
-    return amount / rate;
+    return amount * rate;
   }
 
   /**

@@ -43,13 +43,15 @@ import {
   informationCircleOutline,
   createOutline,
   trashOutline,
+  languageOutline,
 } from 'ionicons/icons';
 
 import { PriceService } from '../../core/services/price.service';
 import { SettingsService } from '../../core/services/settings.service';
 import { ZakatCalculatorService } from '../../core/services/zakat-calculator.service';
 import { StorageService } from '../../core/services/storage.service';
-import { CurrencyEntry, GoldAssets, ZakatResult, POPULAR_CURRENCIES, CurrencyInfo, MarketPrices } from '../../core/models/zakat.models';
+import { TranslationService } from '../../core/services/translation.service';
+import { CurrencyEntry, GoldAssets, ZakatResult, POPULAR_CURRENCIES, CurrencyInfo, MarketPrices, GoldPriceRange } from '../../core/models/zakat.models';
 
 interface CurrencyEntryWithRate extends CurrencyEntry {
   egpPerUnit: number;
@@ -110,6 +112,9 @@ export class HomePage implements OnInit, OnDestroy {
   hasCalculated = false;
   showSavedIndicator = false;
 
+  // Gold price ranges (from APIs)
+  goldRanges: { '24k': GoldPriceRange; '21k': GoldPriceRange; '18k': GoldPriceRange } | null = null;
+
   // Currency picker
   isCurrencyModalOpen = false;
   currencySearch = '';
@@ -140,11 +145,13 @@ export class HomePage implements OnInit, OnDestroy {
     private zakatService: ZakatCalculatorService,
     private storageService: StorageService,
     private alertCtrl: AlertController,
+    public ts: TranslationService,
   ) {
     addIcons({
       settingsOutline, addCircleOutline, closeCircleOutline, refreshOutline,
       leafOutline, alertCircleOutline, checkmarkCircleOutline, searchOutline,
-      cashOutline, diamondOutline, informationCircleOutline, createOutline, trashOutline,
+      cashOutline, diamondOutline, informationCircleOutline, createOutline,
+      trashOutline, languageOutline,
     });
   }
 
@@ -158,16 +165,20 @@ export class HomePage implements OnInit, OnDestroy {
       .subscribe((prices) => {
         this.prices = prices;
         if (prices) {
+          // Store gold ranges for UI
+          this.goldRanges = prices.goldRanges ?? null;
+
           // Seed gold prices only if they weren't restored from storage
           if (this.goldPrice24k === 0) {
             this.goldPrice24k = prices.goldPrices['24k'];
             this.goldPrice21k = prices.goldPrices['21k'];
             this.goldPrice18k = prices.goldPrices['18k'];
           }
-          // Seed exchange rates for any currency added after a save
+          // Seed exchange rates: egrates returns EGP per 1 foreign unit (e.g. USD=52.4)
+          // egpPerUnit is stored directly; no inversion needed
           this.currencies.forEach(c => {
             if (c.egpPerUnit === 0 && prices.exchangeRates[c.code]) {
-              c.egpPerUnit = Math.round((1 / prices.exchangeRates[c.code]) * 100) / 100;
+              c.egpPerUnit = prices.exchangeRates[c.code];
             }
           });
         }
@@ -188,6 +199,12 @@ export class HomePage implements OnInit, OnDestroy {
   ngOnDestroy(): void {
     this.destroy$.next();
     this.destroy$.complete();
+  }
+
+  // ── Language ────────────────────────────────────────────────
+
+  toggleLanguage(): void {
+    this.ts.setLanguage(this.ts.currentLanguage === 'en' ? 'ar' : 'en');
   }
 
   // ── Persistence ────────────────────────────────────────────
@@ -226,12 +243,12 @@ export class HomePage implements OnInit, OnDestroy {
 
   async clearSavedData(): Promise<void> {
     const alert = await this.alertCtrl.create({
-      header: 'Clear All Data?',
-      message: 'This will remove all your saved balances, currencies, and gold entries.',
+      header: this.ts.t('clearAllTitle'),
+      message: this.ts.t('clearAllMessage'),
       buttons: [
-        { text: 'Cancel', role: 'cancel' },
+        { text: this.ts.t('cancel'), role: 'cancel' },
         {
-          text: 'Clear',
+          text: this.ts.t('clear'),
           role: 'destructive',
           handler: () => {
             this.storageService.clear();
@@ -282,6 +299,11 @@ export class HomePage implements OnInit, OnDestroy {
         '21k': this.goldPrice21k || 0,
         '18k': this.goldPrice18k || 0,
       },
+      goldRanges: this.goldRanges ?? {
+        '24k': { min: 0, max: 0 },
+        '21k': { min: 0, max: 0 },
+        '18k': { min: 0, max: 0 },
+      },
       exchangeRates: this.buildExchangeRates(),
     };
 
@@ -295,11 +317,13 @@ export class HomePage implements OnInit, OnDestroy {
   }
 
   private buildExchangeRates(): Record<string, number> {
-    const overrides: Record<string, number> = { ...(this.prices?.exchangeRates ?? {}) };
+    // We store egpPerUnit in each currency entry.
+    // ZakatCalculatorService expects rates as { USD: <EGP per 1 USD> } format.
+    const rates: Record<string, number> = { ...(this.prices?.exchangeRates ?? {}) };
     this.currencies.forEach(c => {
-      if (c.egpPerUnit > 0) overrides[c.code] = 1 / c.egpPerUnit;
+      if (c.egpPerUnit > 0) rates[c.code] = c.egpPerUnit;
     });
-    return overrides;
+    return rates;
   }
 
   // ── Inputs ─────────────────────────────────────────────────
@@ -330,7 +354,8 @@ export class HomePage implements OnInit, OnDestroy {
 
   addCurrency(currency: CurrencyInfo): void {
     const apiRate = this.prices?.exchangeRates[currency.code];
-    const egpPerUnit = apiRate ? Math.round((1 / apiRate) * 100) / 100 : 0;
+    // egrates rates are already EGP per 1 unit of that currency
+    const egpPerUnit = apiRate ? Math.round(apiRate * 100) / 100 : 0;
     this.currencies.push({ code: currency.code, name: currency.name, amount: 0, egpPerUnit });
     this.isCurrencyModalOpen = false;
     this.saveState();
@@ -370,12 +395,35 @@ export class HomePage implements OnInit, OnDestroy {
     return flagMap[code] || '🏳️';
   }
 
+  // ── Gold Price Range Quick-Fill ─────────────────────────────
+
+  fillGoldPrice(karat: '24k' | '21k' | '18k', type: 'min' | 'max'): void {
+    const range = this.goldRanges?.[karat];
+    if (!range) return;
+    const price = type === 'min' ? range.min : range.max;
+    if (karat === '24k') {
+      this.goldPrice24k = price;
+      this.autoFillKaratPrices();
+    } else if (karat === '21k') {
+      this.goldPrice21k = price;
+    } else {
+      this.goldPrice18k = price;
+    }
+    if (this.hasCalculated) this.runCalculation();
+    this.saveState();
+  }
+
+  getGoldRange(karat: '24k' | '21k' | '18k'): { min: number; max: number } | null {
+    return this.goldRanges?.[karat] ?? null;
+  }
+
   async showNisabInfo(): Promise<void> {
     const nisab = this.result?.nisabThresholdEGP;
+    const nisabSuffix = nisab ? `\n\n${this.ts.currentLanguage === 'ar' ? 'حد النصاب الحالي: ' : 'Current Nisab: '}EGP ${this.formatEGP(nisab)}` : '';
     const alert = await this.alertCtrl.create({
-      header: 'What is Nisab?',
-      message: `The Nisab is the minimum amount of wealth a Muslim must have before Zakat becomes obligatory. It equals the value of 85 grams of gold.${nisab ? '\n\nCurrent Nisab: EGP ' + this.formatEGP(nisab) : ''}`,
-      buttons: ['Got it'],
+      header: this.ts.t('nisabInfoTitle'),
+      message: this.ts.tr('nisabInfoMessage', { nisab: nisabSuffix }),
+      buttons: [this.ts.t('gotIt')],
       cssClass: 'nisab-alert',
     });
     await alert.present();

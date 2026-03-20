@@ -1,9 +1,19 @@
+export interface GoldPriceRange {
+  min: number; // international spot price (GoldAPI.io)
+  max: number; // Egyptian local market price (egrates.com)
+}
+
 export interface MarketPrices {
-  exchangeRates: Record<string, number>; // currency_code -> rate per 1 EGP (i.e., how many foreign units = 1 EGP)
+  exchangeRates: Record<string, number>; // currency_code -> EGP per 1 unit of that currency (e.g. USD -> ~52)
   goldPrices: {
-    '24k': number; // price per gram in EGP
+    '24k': number; // recommended price per gram in EGP (Egyptian local)
     '21k': number;
     '18k': number;
+  };
+  goldRanges: {
+    '24k': GoldPriceRange;
+    '21k': GoldPriceRange;
+    '18k': GoldPriceRange;
   };
   baseCurrency: string;
   timestamp: string;

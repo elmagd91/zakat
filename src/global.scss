@@ -154,3 +154,150 @@ ion-label {
 .nisab-alert .alert-message {
   color: #8b949e !important;
 }
+
+/* ─── RTL / Arabic Support ────────────────────────────────── */
+
+/* Arabic font when rtl */
+[dir='rtl'] {
+  --ion-font-family: 'Noto Naskh Arabic', 'Inter', 'Segoe UI', sans-serif;
+  font-family: var(--ion-font-family);
+  letter-spacing: 0; /* Arabic doesn't use letter-spacing */
+}
+
+/* Numbers and EGP amounts always stay LTR even inside RTL context */
+[dir='rtl'] .amount-input,
+[dir='rtl'] .rate-input,
+[dir='rtl'] .zakat-amount,
+[dir='rtl'] .zakat-currency,
+[dir='rtl'] .hedge-value,
+[dir='rtl'] .gold-karat-badge,
+[dir='rtl'] .conversion-hint,
+[dir='rtl'] .nisab-values,
+[dir='rtl'] .wealth-row span:last-child,
+[dir='rtl'] .wealth-total span:last-child {
+  direction: ltr;
+  unicode-bidi: embed;
+  text-align: right;
+}
+
+/* Back button: Ionic handles RTL natively — do NOT flip with scaleX (that mirrors text).
+   Ionic auto-flips the chevron direction; we just keep color. */
+[dir='rtl'] ion-back-button {
+  --color: #10b981; /* keep primary color in RTL */
+}
+
+/* Saved badge alignment */
+[dir='rtl'] .saved-badge {
+  direction: rtl;
+}
+
+/* ion-input text alignment inside RTL */
+[dir='rtl'] ion-input {
+  --placeholder-color: #8b949e;
+  text-align: right;
+}
+
+/* Searchbar text alignment */
+[dir='rtl'] ion-searchbar {
+  --placeholder-color: #8b949e;
+  text-align: right;
+}
+
+/* Section header: icon + text in RTL */
+[dir='rtl'] .section-header {
+  flex-direction: row-reverse;
+  justify-content: flex-end;
+  gap: 8px;
+}
+
+/* ion-item slot labels flip — scoped to list/card items only, NOT ion-range hosts */
+[dir='rtl'] ion-item:not(.range-item) {
+  direction: rtl;
+}
+
+/* ion-range must always render LTR internally so ticks/snaps are in correct positions */
+[dir='rtl'] ion-range {
+  direction: ltr;
+}
+
+/* Rate row flip */
+[dir='rtl'] .rate-row {
+  flex-direction: row-reverse;
+}
+
+/* Price edit row flip */
+[dir='rtl'] .price-edit-row {
+  flex-direction: row-reverse;
+}
+
+/* Accordion header */
+[dir='rtl'] .card-icon-title {
+  flex-direction: row-reverse;
+}
+
+/* Card notes */
+[dir='rtl'] .card-note,
+[dir='rtl'] .zakat-footnote,
+[dir='rtl'] .zakat-status-text {
+  text-align: right;
+}
+
+/* Hedge explanation */
+[dir='rtl'] .hedge-explanation {
+  flex-direction: row-reverse;
+}
+
+/* Formula box */
+[dir='rtl'] .formula {
+  direction: ltr; /* keep formula LTR */
+  text-align: left;
+}
+
+/* Gold karat badge: use margin-inline-end so it works in both LTR and RTL */
+[dir='rtl'] .gold-karat-badge {
+  margin-right: 0;
+  margin-left: 8px; /* RTL: gap goes to the left side (toward the text) */
+}
+
+/* Nisab note */
+[dir='rtl'] .nisab-note {
+  flex-direction: row-reverse;
+}
+
+/* Info card paragraphs */
+[dir='rtl'] .info-card p,
+[dir='rtl'] .info-card h3 {
+  text-align: right;
+}
+
+/* Language toggle buttons */
+.lang-toggle {
+  display: flex;
+  gap: 8px;
+  margin-top: 8px;
+
+  button {
+    flex: 1;
+    padding: 10px 0;
+    border-radius: 12px;
+    font-size: 15px;
+    font-weight: 600;
+    border: 2px solid rgba(255,255,255,0.12);
+    background: transparent;
+    color: #8b949e;
+    cursor: pointer;
+    transition: all 0.2s ease;
+
+    &.active {
+      border-color: var(--ion-color-primary);
+      color: var(--ion-color-primary);
+      background: rgba(16, 185, 129, 0.1);
+    }
+
+    &:hover:not(.active) {
+      border-color: rgba(255,255,255,0.25);
+      color: #e6edf3;
+    }
+  }
+}
+

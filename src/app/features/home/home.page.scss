@@ -359,7 +359,8 @@ ion-header ion-toolbar {
   justify-content: center;
   font-size: 11px;
   font-weight: 800;
-  margin-right: 12px;
+  margin-inline-end: 8px; /* direction-aware gap: 8px on LTR right, 8px on RTL left */
+  flex-shrink: 0;
 
   &.k24 { background: linear-gradient(135deg, #f59e0b, #fcd34d); color: #1c1007; }
   &.k21 { background: linear-gradient(135deg, #d97706, #f59e0b); color: #1c1007; }
@@ -376,6 +377,66 @@ ion-header ion-toolbar {
   padding: 0 12px;
   background: rgba(255, 255, 255, 0.03);
   border-top: 1px solid var(--border);
+}
+
+// ── Gold Price Range Chip ──
+.gold-range-chip {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 0 4px;
+  border-bottom: 1px solid var(--border);
+  margin-bottom: 4px;
+
+  .range-fill-btn {
+    flex: 0 0 auto;
+    background: rgba(16, 185, 129, 0.08);
+    border: 1px solid rgba(16, 185, 129, 0.25);
+    border-radius: 8px;
+    color: var(--primary);
+    font-size: 11px;
+    font-weight: 700;
+    padding: 4px 8px;
+    cursor: pointer;
+    transition: all 0.15s ease;
+    white-space: nowrap;
+    font-family: inherit;
+
+    &:hover {
+      background: rgba(16, 185, 129, 0.18);
+      border-color: var(--primary);
+    }
+
+    &:active {
+      transform: scale(0.96);
+    }
+
+    &.local {
+      background: rgba(245, 158, 11, 0.08);
+      border-color: rgba(245, 158, 11, 0.3);
+      color: var(--gold);
+
+      &:hover {
+        background: rgba(245, 158, 11, 0.18);
+        border-color: var(--gold);
+      }
+    }
+  }
+
+  .range-track {
+    flex: 1;
+    height: 3px;
+    background: var(--border);
+    border-radius: 2px;
+    position: relative;
+
+    .range-bar {
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(90deg, var(--primary), var(--gold));
+      border-radius: 2px;
+    }
+  }
 }
 
 // ── Calculate Button ──

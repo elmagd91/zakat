@@ -4,14 +4,17 @@
       <div class="header-logo">
         <div class="logo-icon">☪</div>
         <div class="header-titles">
-          <p class="header-sub">Smart</p>
-          <h1 class="header-main">Zakat Calculator</h1>
+          <p class="header-sub">{{ ts.t('appSubtitle') }}</p>
+          <h1 class="header-main">{{ ts.t('appTitle') }}</h1>
         </div>
       </div>
       <div class="header-actions">
-        <span class="saved-badge" [class.visible]="showSavedIndicator">✓ Saved</span>
-        <ion-button fill="clear" class="icon-btn" (click)="clearSavedData()" title="Clear all data">
+        <span class="saved-badge" [class.visible]="showSavedIndicator">{{ ts.t('saved') }}</span>
+        <ion-button fill="clear" class="icon-btn" (click)="clearSavedData()" [title]="ts.t('clearData')">
           <ion-icon slot="icon-only" name="trash-outline" color="danger"></ion-icon>
+        </ion-button>
+        <ion-button fill="clear" class="icon-btn lang-btn" (click)="toggleLanguage()" title="Language">
+          <ion-icon slot="icon-only" name="language-outline"></ion-icon>
         </ion-button>
         <ion-button fill="clear" class="settings-btn" (click)="goToSettings()">
           <ion-icon slot="icon-only" name="settings-outline"></ion-icon>
@@ -26,7 +29,7 @@
   <!-- Loading / Error Banner -->
   <div class="status-banner" *ngIf="isLoading">
     <ion-spinner name="crescent" color="light"></ion-spinner>
-    <span>Fetching live market prices...</span>
+    <span>{{ ts.t('fetchingPrices') }}</span>
   </div>
   <div class="status-banner error" *ngIf="errorMessage && !isLoading">
     <ion-icon name="alert-circle-outline"></ion-icon>
@@ -36,7 +39,7 @@
   <!-- ─── EGP Balance ─── -->
   <div class="section-header">
     <ion-icon name="cash-outline"></ion-icon>
-    <h2>Egyptian Pound (EGP)</h2>
+    <h2>{{ ts.t('sectionEGP') }}</h2>
   </div>
 
   <ion-card class="input-card">
@@ -45,7 +48,7 @@
         <div class="currency-flag" slot="start">🇪🇬</div>
         <div class="currency-info" slot="start">
           <span class="currency-code">EGP</span>
-          <span class="currency-name">Egyptian Pound</span>
+          <span class="currency-name">{{ ts.t('egpCurrencyName') }}</span>
         </div>
         <ion-input
           type="number"
@@ -64,10 +67,10 @@
   <!-- ─── Foreign Currencies ─── -->
   <div class="section-header">
     <ion-icon name="cash-outline"></ion-icon>
-    <h2>Foreign Currencies</h2>
+    <h2>{{ ts.t('sectionForeignCurrencies') }}</h2>
     <ion-button fill="clear" size="small" class="add-btn" (click)="openCurrencyModal()">
       <ion-icon slot="start" name="add-circle-outline"></ion-icon>
-      Add
+      {{ ts.t('add') }}
     </ion-button>
   </div>
 
@@ -109,12 +112,12 @@
           class="rate-input"
           inputmode="decimal"
           min="0"
-          placeholder="rate"
+          [placeholder]="ts.t('egp')"
         ></ion-input>
-        <span class="rate-label">EGP</span>
+        <span class="rate-label">{{ ts.t('egp') }}</span>
       </div>
       <div class="conversion-hint" *ngIf="currency.amount > 0 && currency.egpPerUnit > 0">
-        ≈ {{ formatEGP(currency.amount * currency.egpPerUnit) }} EGP
+        {{ ts.t('approx') }} {{ formatEGP(currency.amount * currency.egpPerUnit) }} {{ ts.t('egp') }}
       </div>
     </ion-card-content>
   </ion-card>
@@ -122,14 +125,14 @@
   <div class="empty-currencies" *ngIf="currencies.length === 0">
     <ion-button expand="block" fill="outline" class="add-currency-outline-btn" (click)="openCurrencyModal()">
       <ion-icon slot="start" name="add-circle-outline"></ion-icon>
-      Add a Foreign Currency
+      {{ ts.t('addForeignCurrency') }}
     </ion-button>
   </div>
 
   <!-- ─── Gold Assets ─── -->
   <div class="section-header">
     <ion-icon name="diamond-outline"></ion-icon>
-    <h2>Gold Assets</h2>
+    <h2>{{ ts.t('sectionGoldAssets') }}</h2>
     <button class="refresh-btn" (click)="refreshPrices()" [disabled]="isLoading" title="Refresh live prices">
       <ion-icon name="refresh-outline"></ion-icon>
     </button>
@@ -144,15 +147,14 @@
           <ion-item slot="header" lines="none" class="gold-header-item">
             <div class="gold-karat-badge k24">24K</div>
             <ion-label>
-              <h3>Pure Gold (24 Karat)</h3>
-              <p>Most valuable form</p>
+              <h3>{{ ts.t('gold24kTitle') }}</h3>
+              <p>{{ ts.t('gold24kSub') }}</p>
             </ion-label>
           </ion-item>
           <div slot="content" class="accordion-input">
-            <!-- Editable price per gram -->
             <div class="price-edit-row">
               <ion-icon name="create-outline" class="rate-icon"></ion-icon>
-              <span class="rate-label">Price per gram:</span>
+              <span class="rate-label">{{ ts.t('pricePerGram') }}</span>
               <ion-input
                 type="number"
                 [(ngModel)]="goldPrice24k"
@@ -163,9 +165,18 @@
                 min="0"
                 placeholder="EGP/g"
               ></ion-input>
-              <span class="rate-label">EGP</span>
+              <span class="rate-label">{{ ts.t('egp') }}</span>
             </div>
-            <!-- Grams owned -->
+            <!-- Price range chip -->
+            <div class="gold-range-chip" *ngIf="getGoldRange('24k') as r">
+              <button class="range-fill-btn" (click)="fillGoldPrice('24k', 'min')" title="International spot">
+                {{ formatEGP(r.min) }}
+              </button>
+              <div class="range-track"><div class="range-bar"></div></div>
+              <button class="range-fill-btn local" (click)="fillGoldPrice('24k', 'max')" title="Egyptian market">
+                {{ formatEGP(r.max) }}
+              </button>
+            </div>
             <ion-item lines="none" class="amount-item">
               <ion-input
                 type="number"
@@ -176,10 +187,10 @@
                 inputmode="decimal"
                 min="0"
               ></ion-input>
-              <span slot="end" class="unit-label">grams</span>
+              <span slot="end" class="unit-label">{{ ts.t('grams') }}</span>
             </ion-item>
             <div class="conversion-hint" *ngIf="gold.grams24k > 0 && goldPrice24k > 0">
-              ≈ {{ formatEGP(gold.grams24k * goldPrice24k) }} EGP
+              {{ ts.t('approx') }} {{ formatEGP(gold.grams24k * goldPrice24k) }} {{ ts.t('egp') }}
             </div>
           </div>
         </ion-accordion>
@@ -189,14 +200,14 @@
           <ion-item slot="header" lines="none" class="gold-header-item">
             <div class="gold-karat-badge k21">21K</div>
             <ion-label>
-              <h3>Gold (21 Karat)</h3>
-              <p>Most common in Egypt</p>
+              <h3>{{ ts.t('gold21kTitle') }}</h3>
+              <p>{{ ts.t('gold21kSub') }}</p>
             </ion-label>
           </ion-item>
           <div slot="content" class="accordion-input">
             <div class="price-edit-row">
               <ion-icon name="create-outline" class="rate-icon"></ion-icon>
-              <span class="rate-label">Price per gram:</span>
+              <span class="rate-label">{{ ts.t('pricePerGram') }}</span>
               <ion-input
                 type="number"
                 [(ngModel)]="goldPrice21k"
@@ -206,7 +217,17 @@
                 min="0"
                 placeholder="EGP/g"
               ></ion-input>
-              <span class="rate-label">EGP</span>
+              <span class="rate-label">{{ ts.t('egp') }}</span>
+            </div>
+            <!-- Price range chip -->
+            <div class="gold-range-chip" *ngIf="getGoldRange('21k') as r">
+              <button class="range-fill-btn" (click)="fillGoldPrice('21k', 'min')" title="International spot">
+                {{ formatEGP(r.min) }}
+              </button>
+              <div class="range-track"><div class="range-bar"></div></div>
+              <button class="range-fill-btn local" (click)="fillGoldPrice('21k', 'max')" title="Egyptian market">
+                {{ formatEGP(r.max) }}
+              </button>
             </div>
             <ion-item lines="none" class="amount-item">
               <ion-input
@@ -218,10 +239,10 @@
                 inputmode="decimal"
                 min="0"
               ></ion-input>
-              <span slot="end" class="unit-label">grams</span>
+              <span slot="end" class="unit-label">{{ ts.t('grams') }}</span>
             </ion-item>
             <div class="conversion-hint" *ngIf="gold.grams21k > 0 && goldPrice21k > 0">
-              ≈ {{ formatEGP(gold.grams21k * goldPrice21k) }} EGP
+              {{ ts.t('approx') }} {{ formatEGP(gold.grams21k * goldPrice21k) }} {{ ts.t('egp') }}
             </div>
           </div>
         </ion-accordion>
@@ -231,14 +252,14 @@
           <ion-item slot="header" lines="none" class="gold-header-item">
             <div class="gold-karat-badge k18">18K</div>
             <ion-label>
-              <h3>Gold (18 Karat)</h3>
-              <p>Common in jewelry</p>
+              <h3>{{ ts.t('gold18kTitle') }}</h3>
+              <p>{{ ts.t('gold18kSub') }}</p>
             </ion-label>
           </ion-item>
           <div slot="content" class="accordion-input">
             <div class="price-edit-row">
               <ion-icon name="create-outline" class="rate-icon"></ion-icon>
-              <span class="rate-label">Price per gram:</span>
+              <span class="rate-label">{{ ts.t('pricePerGram') }}</span>
               <ion-input
                 type="number"
                 [(ngModel)]="goldPrice18k"
@@ -248,7 +269,17 @@
                 min="0"
                 placeholder="EGP/g"
               ></ion-input>
-              <span class="rate-label">EGP</span>
+              <span class="rate-label">{{ ts.t('egp') }}</span>
+            </div>
+            <!-- Price range chip -->
+            <div class="gold-range-chip" *ngIf="getGoldRange('18k') as r">
+              <button class="range-fill-btn" (click)="fillGoldPrice('18k', 'min')" title="International spot">
+                {{ formatEGP(r.min) }}
+              </button>
+              <div class="range-track"><div class="range-bar"></div></div>
+              <button class="range-fill-btn local" (click)="fillGoldPrice('18k', 'max')" title="Egyptian market">
+                {{ formatEGP(r.max) }}
+              </button>
             </div>
             <ion-item lines="none" class="amount-item">
               <ion-input
@@ -260,10 +291,10 @@
                 inputmode="decimal"
                 min="0"
               ></ion-input>
-              <span slot="end" class="unit-label">grams</span>
+              <span slot="end" class="unit-label">{{ ts.t('grams') }}</span>
             </ion-item>
             <div class="conversion-hint" *ngIf="gold.grams18k > 0 && goldPrice18k > 0">
-              ≈ {{ formatEGP(gold.grams18k * goldPrice18k) }} EGP
+              {{ ts.t('approx') }} {{ formatEGP(gold.grams18k * goldPrice18k) }} {{ ts.t('egp') }}
             </div>
           </div>
         </ion-accordion>
@@ -280,42 +311,42 @@
     (click)="calculate()"
   >
     <ion-icon slot="start" name="leaf-outline"></ion-icon>
-    {{ hasCalculated ? 'Recalculate &amp; Save' : 'Calculate Zakat' }}
+    {{ hasCalculated ? ts.t('recalculate') : ts.t('calculate') }}
   </ion-button>
 
   <!-- ─── Results Section ─── -->
   <div class="results-section" *ngIf="result">
 
-    <div class="result-divider"><span>Your Results</span></div>
+    <div class="result-divider"><span>{{ ts.t('yourResults') }}</span></div>
 
     <!-- Wealth Summary -->
     <ion-card class="wealth-summary-card">
       <ion-card-header>
-        <ion-card-title>Total Wealth</ion-card-title>
-        <ion-card-subtitle>Breakdown in EGP</ion-card-subtitle>
+        <ion-card-title>{{ ts.t('totalWealth') }}</ion-card-title>
+        <ion-card-subtitle>{{ ts.t('breakdownEGP') }}</ion-card-subtitle>
       </ion-card-header>
       <ion-card-content>
         <div class="wealth-row">
-          <span>🇪🇬 Cash (EGP)</span>
+          <span>{{ ts.t('cashEGP') }}</span>
           <span>{{ formatEGP(result.egpBalance) }}</span>
         </div>
         <div class="wealth-row" *ngIf="result.currencyWealthEGP > 0">
-          <span>💱 Foreign Currencies</span>
+          <span>{{ ts.t('foreignCurrencies') }}</span>
           <span>{{ formatEGP(result.currencyWealthEGP) }}</span>
         </div>
         <div class="wealth-row" *ngIf="result.goldWealthEGP > 0">
-          <span>🥇 Gold Assets</span>
+          <span>{{ ts.t('goldAssets') }}</span>
           <span>{{ formatEGP(result.goldWealthEGP) }}</span>
         </div>
         <div class="wealth-total">
-          <span>Total</span>
+          <span>{{ ts.t('total') }}</span>
           <span>{{ formatEGP(result.totalWealthEGP) }} EGP</span>
         </div>
 
         <!-- Nisab Progress -->
         <div class="nisab-progress-container">
           <div class="nisab-header">
-            <span class="nisab-label">Nisab Threshold</span>
+            <span class="nisab-label">{{ ts.t('nisabThreshold') }}</span>
             <button class="info-btn" (click)="showNisabInfo()">
               <ion-icon name="information-circle-outline"></ion-icon>
             </button>
@@ -336,12 +367,11 @@
     <ion-card class="zakat-card below-nisab" *ngIf="!result.isAboveNisab">
       <ion-card-content>
         <div class="zakat-status-icon">🕊️</div>
-        <h2 class="zakat-status-title">No Zakat Due</h2>
+        <h2 class="zakat-status-title">{{ ts.t('noZakatDue') }}</h2>
         <p class="zakat-status-text">
-          Your total wealth of <strong>{{ formatEGP(result.totalWealthEGP) }} EGP</strong>
-          has not reached the Nisab of <strong>{{ formatEGP(result.nisabThresholdEGP) }} EGP</strong>.
+          {{ ts.tr('noZakatText', { wealth: formatEGP(result.totalWealthEGP), nisab: formatEGP(result.nisabThresholdEGP) }) }}
         </p>
-        <p class="zakat-footnote">Zakat becomes obligatory when wealth reaches the Nisab.</p>
+        <p class="zakat-footnote">{{ ts.t('zakatFootnote') }}</p>
       </ion-card-content>
     </ion-card>
 
@@ -354,15 +384,15 @@
               <ion-icon name="checkmark-circle-outline"></ion-icon>
             </div>
             <div>
-              <ion-card-title>Obligatory Zakat</ion-card-title>
-              <ion-card-subtitle>Minimum — 2.5% of your wealth</ion-card-subtitle>
+              <ion-card-title>{{ ts.t('obligatoryZakat') }}</ion-card-title>
+              <ion-card-subtitle>{{ ts.t('obligatoryZakatSub') }}</ion-card-subtitle>
             </div>
           </div>
         </ion-card-header>
         <ion-card-content>
           <div class="zakat-amount">{{ formatEGP(result.obligatoryZakat) }}</div>
           <div class="zakat-currency">EGP</div>
-          <p class="card-note">The exact Zakat obligation you must fulfill.</p>
+          <p class="card-note">{{ ts.t('exactObligation') }}</p>
         </ion-card-content>
       </ion-card>
 
@@ -373,8 +403,8 @@
               <ion-icon name="leaf-outline"></ion-icon>
             </div>
             <div>
-              <ion-card-title>Precautionary Zakat</ion-card-title>
-              <ion-card-subtitle>+{{ result.hedgePercentage }}% hedge buffer</ion-card-subtitle>
+              <ion-card-title>{{ ts.t('precautionaryZakat') }}</ion-card-title>
+              <ion-card-subtitle>{{ ts.tr('precautionaryZakatSub', { pct: result.hedgePercentage.toString() }) }}</ion-card-subtitle>
             </div>
           </div>
         </ion-card-header>
@@ -382,8 +412,8 @@
           <div class="zakat-amount hedge">{{ formatEGP(result.hedgeZakat) }}</div>
           <div class="zakat-currency">EGP</div>
           <p class="card-note">
-            Accounts for market fluctuations with a <strong>{{ result.hedgePercentage }}%</strong>
-            buffer. Adjust in <button class="link-btn" (click)="goToSettings()">Settings</button>.
+            {{ ts.tr('accountsFor', { pct: result.hedgePercentage.toString() }) }}
+            <button class="link-btn" (click)="goToSettings()">{{ ts.t('adjustIn') }}</button>.
           </p>
         </ion-card-content>
       </ion-card>
@@ -399,15 +429,15 @@
   <ng-template>
     <ion-header>
       <ion-toolbar>
-        <ion-title>Select Currency</ion-title>
+        <ion-title>{{ ts.t('selectCurrency') }}</ion-title>
         <ion-buttons slot="end">
-          <ion-button (click)="isCurrencyModalOpen = false">Close</ion-button>
+          <ion-button (click)="isCurrencyModalOpen = false">{{ ts.t('close') }}</ion-button>
         </ion-buttons>
       </ion-toolbar>
     </ion-header>
     <ion-content>
       <ion-searchbar
-        placeholder="Search currencies..."
+        [placeholder]="ts.t('searchCurrencies')"
         [(ngModel)]="currencySearch"
         [debounce]="200"
         animated
@@ -421,7 +451,7 @@
           </ion-label>
         </ion-item>
         <ion-item *ngIf="filteredCurrencies.length === 0">
-          <ion-label class="ion-text-center"><p>No currencies found</p></ion-label>
+          <ion-label class="ion-text-center"><p>{{ ts.t('noCurrenciesFound') }}</p></ion-label>
         </ion-item>
       </ion-list>
     </ion-content>
