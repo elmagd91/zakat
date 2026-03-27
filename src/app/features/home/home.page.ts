@@ -169,9 +169,12 @@ export class HomePage implements OnInit, OnDestroy {
     // 1. Restore saved state FIRST (before API prices arrive)
     this.restoreState();
 
-    // 2. Compute today's Hijri date
+    // 2. Hijri date: show local fallback immediately, then update from Aladhan API
     const offset = this.settingsService.hijriDayOffset;
     this.hijriToday = this.hijriService.todayHijri(offset).formatted(this.ts.currentLanguage);
+    this.hijriService.todayHijriAsync(offset).then(h => {
+      this.hijriToday = h.formatted(this.ts.currentLanguage);
+    });
 
     // 3. Subscribe to Hawl state
     this.hawlService.hawlState$

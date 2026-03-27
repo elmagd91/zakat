@@ -301,3 +301,61 @@ ion-label {
   }
 }
 
+/* ─── Hijri Date Picker Alert ──────────────────────────────── */
+.hijri-datepicker-alert {
+  --background: #161b22;
+  --color: #e6edf3;
+
+  .alert-title {
+    color: #c9a84c !important;
+    font-size: 1rem !important;
+  }
+
+  .alert-message {
+    padding: 0 !important;
+  }
+
+  /* picker-row: a label + select pair */
+  .picker-row {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    padding: 10px 16px 2px;
+
+    label {
+      font-size: 0.72rem;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      color: rgba(255, 255, 255, 0.45);
+    }
+
+    select {
+      width: 100%;
+      padding: 8px 10px;
+      border-radius: 10px;
+      border: 1px solid rgba(201, 168, 76, 0.3);
+      background: rgba(255, 255, 255, 0.05);
+      color: #e6edf3;
+      font-size: 0.92rem;
+      font-family: inherit;
+      appearance: auto;
+      cursor: pointer;
+
+      option {
+        background: #1c2233;
+        color: #e6edf3;
+      }
+    }
+  }
+
+  .alert-button-group {
+    margin-top: 8px;
+  }
+
+  .alert-button:last-child {
+    color: #c9a84c !important;
+    font-weight: 700 !important;
+  }
+}
+
+

@@ -210,6 +210,95 @@ ion-title {
   }
 }
 
+// ── Hijri Offset ──
+.hijri-date-display {
+  text-align: center;
+  padding: 12px 0 8px;
+}
+
+.hijri-date-value {
+  font-size: 22px;
+  font-weight: 700;
+  color: var(--primary);
+  letter-spacing: 0.3px;
+}
+
+.hijri-date-label {
+  font-size: 12px;
+  color: var(--text-secondary);
+  text-transform: uppercase;
+  letter-spacing: 0.8px;
+  margin-top: 4px;
+}
+
+.hijri-offset-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-top: 12px;
+  padding-top: 12px;
+  border-top: 1px solid var(--border);
+}
+
+.hijri-offset-info {
+  flex: 1;
+}
+
+.hijri-offset-title {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+.hijri-offset-sub {
+  font-size: 12px;
+  color: var(--text-secondary);
+  margin-top: 2px;
+}
+
+.hijri-stepper {
+  display: flex;
+  align-items: center;
+  gap: 0;
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  overflow: hidden;
+}
+
+.stepper-btn {
+  background: transparent;
+  border: none;
+  color: var(--primary);
+  font-size: 22px;
+  font-weight: 700;
+  width: 40px;
+  height: 40px;
+  cursor: pointer;
+  line-height: 1;
+  transition: background 0.15s;
+
+  &:hover:not([disabled]) {
+    background: rgba(16, 185, 129, 0.12);
+  }
+
+  &[disabled] {
+    color: var(--text-muted);
+    cursor: default;
+  }
+}
+
+.stepper-value {
+  display: inline-block;
+  min-width: 32px;
+  text-align: center;
+  font-size: 16px;
+  font-weight: 700;
+  color: var(--text-primary);
+}
+
+
 .bottom-padding {
   height: 40px;
 }

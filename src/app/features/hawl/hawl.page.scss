@@ -272,6 +272,48 @@ ion-header ion-toolbar {
   --color: #eb5757;
 }
 
+// ── Two-button action row (when no Hawl) ──────────────────────────────────
+.action-row {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+}
+
+.pick-date-btn {
+  --border-color: rgba(201, 168, 76, 0.45);
+  --color: #c9a84c;
+}
+
+// ── Edit start date button (inside summary card) ───────────────────────────
+.edit-date-btn {
+  margin-top: 12px;
+  --border-color: rgba(255, 255, 255, 0.2);
+  --color: rgba(255, 255, 255, 0.7);
+  font-size: 0.82rem;
+  height: 40px;
+}
+
+// ── Stacked Gregorian + Hijri dates ───────────────────────────────────────
+.date-stack {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 2px;
+
+  .date-gregorian {
+    font-size: 0.88rem;
+    font-weight: 600;
+    color: rgba(255, 255, 255, 0.85);
+  }
+
+  .date-hijri {
+    font-size: 0.75rem;
+    color: #c9a84c;
+    font-weight: 500;
+  }
+}
+
 .bottom-padding {
   height: 40px;
 }
+

@@ -87,8 +87,13 @@ export const POPULAR_CURRENCIES: CurrencyInfo[] = [
 
 // ── Hawl (one-year period) tracking ────────────────────────────────────────
 
-/** Number of days in an Islamic lunar year (Hawl) */
-export const HAWL_DAYS = 354;
+/**
+ * Fallback value used only before the Aladhan API responds.
+ * The authoritative value is fetched from the Aladhan gToH endpoint
+ * (isLeapYear field) and stored in HawlService.hawlDays.
+ * 1447 AH is a leap year → 355 days.
+ */
+export const HAWL_DAYS_FALLBACK = 355;
 
 /** Saved snapshot of when a Hawl period was started */
 export interface HawlRecord {

@@ -25,7 +25,10 @@ import {
   informationCircleOutline,
   leafOutline,
   languageOutline,
+  calendarOutline,
 } from 'ionicons/icons';
+
+import { HijriService } from '../../core/services/hijri.service';
 
 import { SettingsService } from '../../core/services/settings.service';
 import { TranslationService } from '../../core/services/translation.service';
@@ -58,9 +61,20 @@ export class SettingsPage implements OnInit, OnDestroy {
   private destroy$ = new Subject<void>();
 
   hedgePercentage: number = 5;
+  hijriOffset: number = 0;
 
   get minHedge(): number { return this.settingsService.minHedge; }
   get maxHedge(): number { return this.settingsService.maxHedge; }
+  get minHijriOffset(): number { return this.settingsService.minHijriOffset; }
+  get maxHijriOffset(): number { return this.settingsService.maxHijriOffset; }
+
+  /** Displayed Hijri date — updated from API on init and on every offset change. */
+  todayHijriFormatted = '';
+
+  get hijriOffsetLabel(): string {
+    if (this.hijriOffset === 0) return '0';
+    return this.hijriOffset > 0 ? `+${this.hijriOffset}` : `${this.hijriOffset}`;
+  }
 
   get hedgeExplanation(): string {
     const h = this.hedgePercentage;
@@ -72,15 +86,33 @@ export class SettingsPage implements OnInit, OnDestroy {
   constructor(
     private router: Router,
     private settingsService: SettingsService,
+    private hijriService: HijriService,
     public ts: TranslationService,
   ) {
-    addIcons({ arrowBackOutline, shieldCheckmarkOutline, informationCircleOutline, leafOutline, languageOutline });
+    addIcons({ arrowBackOutline, shieldCheckmarkOutline, informationCircleOutline, leafOutline, languageOutline, calendarOutline });
   }
 
   ngOnInit(): void {
     this.settingsService.hedgePercentage$
       .pipe(takeUntil(this.destroy$))
       .subscribe((val) => (this.hedgePercentage = val));
+
+    this.settingsService.hijriDayOffset$
+      .pipe(takeUntil(this.destroy$))
+      .subscribe((val) => {
+        this.hijriOffset = val;
+        this.refreshHijriDate();
+      });
+  }
+
+  private refreshHijriDate(): void {
+    // Show local fallback instantly, then update from Aladhan API
+    this.todayHijriFormatted = this.hijriService
+      .todayHijri(this.hijriOffset)
+      .formatted(this.ts.currentLanguage as 'en' | 'ar');
+    this.hijriService.todayHijriAsync(this.hijriOffset).then(h => {
+      this.todayHijriFormatted = h.formatted(this.ts.currentLanguage as 'en' | 'ar');
+    });
   }
 
   ngOnDestroy(): void {
@@ -95,6 +127,14 @@ export class SettingsPage implements OnInit, OnDestroy {
   onHedgeChange(event: CustomEvent): void {
     const value = event.detail.value as number;
     this.settingsService.setHedgePercentage(value);
+  }
+
+  incrementOffset(): void {
+    this.settingsService.setHijriDayOffset(this.hijriOffset + 1);
+  }
+
+  decrementOffset(): void {
+    this.settingsService.setHijriDayOffset(this.hijriOffset - 1);
   }
 
   goBack(): void {

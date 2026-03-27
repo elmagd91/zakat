@@ -46,8 +46,8 @@
         {{ (hawlState.progressFraction * 100).toFixed(0) }}%
       </text>
       <text x="100" y="108" text-anchor="middle" class="ring-days-text">
-        <tspan *ngIf="hawlState.record">{{ hawlState.elapsedDays }} / 354</tspan>
-        <tspan *ngIf="!hawlState.record">0 / 354</tspan>
+        <tspan *ngIf="hawlState.record">{{ hawlState.elapsedDays }} / {{ hawlDays }}</tspan>
+        <tspan *ngIf="!hawlState.record">0 / {{ hawlDays }}</tspan>
       </text>
       <text x="100" y="124" text-anchor="middle" class="ring-label-text">days</text>
     </svg>
@@ -103,7 +103,10 @@
           <ion-icon name="calendar-outline"></ion-icon>
           {{ ts.t('startedOn') }}
         </span>
-        <span class="summary-value">{{ formatDate(hawlState.record!.startDate) }}</span>
+        <span class="summary-value date-stack">
+          <span class="date-gregorian">{{ formatDate(hawlState.record!.startDate) }}</span>
+          <span class="date-hijri">{{ formatHijriDate(hawlState.record!.startDate) }}</span>
+        </span>
       </div>
       <div class="summary-row" *ngIf="hawlState.record!.nisabAtStart > 0">
         <span class="summary-label">
@@ -119,20 +122,45 @@
         </span>
         <span class="summary-value">{{ formatEGP(hawlState.record!.wealthAtStart) }} EGP</span>
       </div>
+
+      <!-- Edit Start Date button (visible while Hawl is running) -->
+      <ion-button
+        expand="block"
+        fill="outline"
+        class="edit-date-btn"
+        (click)="openDatePicker(true)"
+      >
+        <ion-icon slot="start" name="create-outline"></ion-icon>
+        {{ ts.t('editStartDate') }}
+      </ion-button>
     </ion-card-content>
   </ion-card>
 
   <!-- ── Action Buttons ── -->
-  <ion-button
-    *ngIf="!hawlState.record"
-    expand="block"
-    class="action-btn start-btn"
-    (click)="startHawl()"
-  >
-    <ion-icon slot="start" name="time-outline"></ion-icon>
-    {{ ts.t('startHawl') }}
-  </ion-button>
 
+  <!-- When no Hawl: two buttons (start today | pick date) -->
+  <div class="action-row" *ngIf="!hawlState.record">
+    <ion-button
+      expand="block"
+      class="action-btn start-btn"
+      (click)="startHawl()"
+    >
+      <ion-icon slot="start" name="time-outline"></ion-icon>
+      {{ ts.t('startHawl') }}
+    </ion-button>
+
+    <ion-button
+      expand="block"
+      fill="outline"
+      class="action-btn pick-date-btn"
+      (click)="openDatePicker(false)"
+    >
+      <ion-icon slot="start" name="calendar-outline"></ion-icon>
+      {{ ts.t('setStartDate') }}
+    </ion-button>
+  </div>
+
+  <!-- When Hawl active: reset button -->
   <ion-button
     *ngIf="hawlState.record"
     expand="block"

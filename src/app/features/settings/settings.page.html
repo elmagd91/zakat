@@ -28,6 +28,41 @@
     </ion-card-content>
   </ion-card>
 
+  <!-- ─── Hijri Calendar ─── -->
+  <div class="section-header">
+    <ion-icon name="calendar-outline"></ion-icon>
+    <h2>{{ ts.t('hijriSectionHeader') }}</h2>
+  </div>
+
+  <ion-card class="settings-card">
+    <ion-card-content>
+      <div class="hijri-date-display">
+        <div class="hijri-date-value">{{ todayHijriFormatted }}</div>
+        <div class="hijri-date-label">{{ ts.t('todayHijri') }}</div>
+      </div>
+
+      <div class="hijri-offset-row">
+        <div class="hijri-offset-info">
+          <div class="hijri-offset-title">{{ ts.t('hijriDayOffset') }}</div>
+          <div class="hijri-offset-sub">{{ ts.t('hijriDayOffsetSub') }}</div>
+        </div>
+        <div class="hijri-stepper">
+          <button
+            class="stepper-btn"
+            (click)="decrementOffset()"
+            [disabled]="hijriOffset <= minHijriOffset"
+          >−</button>
+          <span class="stepper-value">{{ hijriOffsetLabel }}</span>
+          <button
+            class="stepper-btn"
+            (click)="incrementOffset()"
+            [disabled]="hijriOffset >= maxHijriOffset"
+          >+</button>
+        </div>
+      </div>
+    </ion-card-content>
+  </ion-card>
+
   <!-- ─── Hedge Buffer ─── -->
   <div class="section-header">
     <ion-icon name="shield-checkmark-outline"></ion-icon>

@@ -55,6 +55,6 @@ export class TranslationService {
 
   private loadLanguage(): Language {
     const stored = localStorage.getItem(STORAGE_KEY) as Language | null;
-    return stored === 'ar' ? 'ar' : 'en';
+    return stored === 'en' ? 'en' : 'ar';
   }
 }

@@ -119,6 +119,13 @@ export interface Translations {
   hawlBannerProgress: string;  // takes {days} placeholder
   hawlBannerDue: string;
   viewHawl: string;
+  setStartDate: string;
+  editStartDate: string;
+  setStartDateTitle: string;
+  hijriYear: string;
+  hijriMonth: string;
+  hijriDay: string;
+  confirm: string;
 
   // ── Hijri calendar ───────────────────────────────────────────────────
   todayHijri: string;
@@ -247,6 +254,13 @@ export const TRANSLATIONS: Record<Language, Translations> = {
     hawlBannerProgress: 'Hawl: {days} days left',
     hawlBannerDue: '⚠️ Hawl complete — Zakat is due!',
     viewHawl: 'View Hawl',
+    setStartDate: 'Set Start Date',
+    editStartDate: 'Edit Start Date',
+    setStartDateTitle: 'Hawl Start Date (Hijri)',
+    hijriYear: 'Year',
+    hijriMonth: 'Month',
+    hijriDay: 'Day',
+    confirm: 'Confirm',
 
     // Hijri calendar
     todayHijri: 'Today (Hijri)',
@@ -374,6 +388,13 @@ export const TRANSLATIONS: Record<Language, Translations> = {
     hawlBannerProgress: 'الحول: {days} يوماً متبقياً',
     hawlBannerDue: '⚠️ اكتمل الحول — الزكاة واجبة!',
     viewHawl: 'عرض الحول',
+    setStartDate: 'تحديد تاريخ البدء',
+    editStartDate: 'تعديل تاريخ البدء',
+    setStartDateTitle: 'تاريخ بداية الحول (هجري)',
+    hijriYear: 'السنة',
+    hijriMonth: 'الشهر',
+    hijriDay: 'اليوم',
+    confirm: 'تأكيد',
 
     // Hijri calendar
     todayHijri: 'اليوم (هجري)',
