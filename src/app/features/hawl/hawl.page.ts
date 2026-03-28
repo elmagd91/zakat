@@ -33,7 +33,7 @@ import { HawlService } from '../../core/services/hawl.service';
 import { HijriService } from '../../core/services/hijri.service';
 import { SettingsService } from '../../core/services/settings.service';
 import { TranslationService } from '../../core/services/translation.service';
-import { HawlState } from '../../core/models/zakat.models';
+import { HawlState, HijriDate } from '../../core/models/zakat.models';
 
 const HIJRI_MONTHS_EN = [
   'Muharram', 'Safar', "Rabi' al-Awwal", "Rabi' al-Thani",
@@ -68,6 +68,16 @@ export class HawlPage implements OnInit, OnDestroy {
   };
 
   hijriDateStr = '';
+  /** Full API-backed HijriDate for today — used as picker default for new hawl. */
+  private todayHijriDate: HijriDate | null = null;
+  /** Hijri string for the hawl start date — API-backed, sync fallback shown first. */
+  startHijriStr = '';
+  /** Full API-backed HijriDate for the hawl start date — used as picker default when editing. */
+  private startHijriDate: HijriDate | null = null;
+  /** ISO string of the hawl end date (startDate + hawlDays). */
+  endDateISO = '';
+  /** Hijri string for the hawl end date — API-backed, sync fallback shown first. */
+  endHijriStr = '';
   /** Today's Hijri year — populated from Aladhan API in ngOnInit. */
   todayHijriYear = 1447; // safe fallback; overwritten by API
 
@@ -96,14 +106,38 @@ export class HawlPage implements OnInit, OnDestroy {
   ngOnInit(): void {
     this.hawlService.hawlState$
       .pipe(takeUntil(this.destroy$))
-      .subscribe(s => this.hawlState = s);
+      .subscribe(s => {
+        this.hawlState = s;
+        if (s.record) {
+          const startDate = new Date(s.record.startDate);
+          const endDate = new Date(startDate.getTime() + this.hawlDays * 86_400_000);
+          this.endDateISO = endDate.toISOString();
+
+          // Sync fallback shown immediately, then overwritten by API result
+          this.startHijriStr = this.hijriService.convertUTC(startDate).formatted(this.ts.currentLanguage);
+          this.hijriService.convertAsync(startDate).then(h => {
+            this.startHijriStr = h.formatted(this.ts.currentLanguage);
+            this.startHijriDate = h;
+          });
+
+          this.endHijriStr = this.hijriService.convertUTC(endDate).formatted(this.ts.currentLanguage);
+          this.hijriService.convertAsync(endDate).then(h => {
+            this.endHijriStr = h.formatted(this.ts.currentLanguage);
+          });
+        } else {
+          this.startHijriStr = '';
+          this.endDateISO = '';
+          this.endHijriStr = '';
+        }
+      });
 
     const offset = this.settingsService.hijriDayOffset;
     // Show local fallback instantly, then update from Aladhan API
     this.hijriDateStr = this.hijriService.todayHijri(offset).formatted(this.ts.currentLanguage);
     this.hijriService.todayHijriAsync(offset).then(h => {
       this.hijriDateStr = h.formatted(this.ts.currentLanguage);
-      this.todayHijriYear = h.year; // store API-backed year for the picker
+      this.todayHijriYear = h.year;
+      this.todayHijriDate = h;
     });
   }
 
@@ -132,15 +166,17 @@ export class HawlPage implements OnInit, OnDestroy {
     const isAr = this.ts.currentLanguage === 'ar';
     const monthNames = isAr ? HIJRI_MONTHS_AR : HIJRI_MONTHS_EN;
 
-    // Default pre-fill: today's Hijri date from API-backed property
-    let preYear  = this.todayHijriYear;
-    let preMonth = 1;
-    let preDay   = 1;
+    // Default pre-fill from API-backed objects; fall back to sync values
+    const todaySync = this.hijriService.todayHijri(this.settingsService.hijriDayOffset);
+    const today = this.todayHijriDate ?? todaySync;
+
+    let preYear  = today.year;
+    let preMonth = today.month;
+    let preDay   = today.day;
 
     if (isEdit && this.hawlState.record) {
-      // Edit mode: pre-fill with current start date converted via UTC path
-      const startGreg = new Date(this.hawlState.record.startDate);
-      const h = this.hijriService.convertUTC(startGreg);
+      const h = this.startHijriDate
+        ?? this.hijriService.convertUTC(new Date(this.hawlState.record.startDate));
       preYear  = h.year;
       preMonth = h.month;
       preDay   = h.day;
@@ -172,15 +208,32 @@ export class HawlPage implements OnInit, OnDestroy {
     if (msgEl) {
       msgEl.innerHTML = this.buildPickerHTML(preDay, preMonth, preYear, monthNames);
 
-      // Wire up change events to keep savedH* in sync
       const dayEl   = msgEl.querySelector('#picker-day')   as HTMLSelectElement | null;
       const monthEl = msgEl.querySelector('#picker-month') as HTMLSelectElement | null;
       const yearEl  = msgEl.querySelector('#picker-year')  as HTMLSelectElement | null;
 
-      dayEl?.addEventListener('change',   () => { savedHd = parseInt(dayEl.value,   10); });
-      monthEl?.addEventListener('change', () => { savedHm = parseInt(monthEl.value, 10); });
-      yearEl?.addEventListener('change',  () => { savedHy = parseInt(yearEl.value,  10); });
+      dayEl?.addEventListener('change', () => { savedHd = parseInt(dayEl.value, 10); });
+
+      monthEl?.addEventListener('change', () => {
+        savedHm = parseInt(monthEl.value, 10);
+        // Update day options when month changes (Hijri months: odd=30d, even=29d)
+        if (dayEl) {
+          const maxDays = this.hijriMonthDays(savedHm);
+          const currentDay = parseInt(dayEl.value, 10);
+          savedHd = Math.min(isNaN(currentDay) ? 1 : currentDay, maxDays);
+          dayEl.innerHTML = Array.from({ length: maxDays }, (_, i) => i + 1)
+            .map(d => `<option value="${d}"${d === savedHd ? ' selected' : ''}>${d}</option>`)
+            .join('');
+        }
+      });
+
+      yearEl?.addEventListener('change', () => { savedHy = parseInt(yearEl.value, 10); });
     }
+  }
+
+  /** Returns the number of days in a Hijri month (odd=30, even=29). */
+  private hijriMonthDays(month: number): number {
+    return month % 2 === 1 ? 30 : 29;
   }
 
   /** Build the picker HTML string (not bound by Angular's sanitizer here). */
@@ -191,8 +244,10 @@ export class HawlPage implements OnInit, OnDestroy {
     // Use API-backed year (stored in todayHijriYear) — never the broken sync path
     const todayYear = this.todayHijriYear;
 
-    const dayOpts = Array.from({ length: 30 }, (_, i) => i + 1)
-      .map(d => `<option value="${d}"${d === preDay ? ' selected' : ''}>${d}</option>`)
+    const maxDaysForMonth = preMonth % 2 === 1 ? 30 : 29;
+    const clampedDay = Math.min(preDay, maxDaysForMonth);
+    const dayOpts = Array.from({ length: maxDaysForMonth }, (_, i) => i + 1)
+      .map(d => `<option value="${d}"${d === clampedDay ? ' selected' : ''}>${d}</option>`)
       .join('');
 
     const monthOpts = monthNames
@@ -228,10 +283,14 @@ export class HawlPage implements OnInit, OnDestroy {
 
   /** Convert the chosen Hijri date to Gregorian and update the Hawl record. */
   private async applyHijriStartDate(hd: number, hm: number, hy: number): Promise<void> {
+    if (isNaN(hd) || isNaN(hm) || isNaN(hy)) return;
+
     const loading = await this.loadingCtrl.create({ duration: 5000, spinner: 'crescent' });
     await loading.present();
     try {
       const isoDate = await this.hijriService.hijriToGregorianAsync(hd, hm, hy);
+      const parsed = new Date(isoDate + 'T00:00:00.000Z');
+      if (isNaN(parsed.getTime())) return;
       // Preserve existing nisab/wealth if editing
       const nisab  = this.hawlState.record?.nisabAtStart  ?? 0;
       const wealth = this.hawlState.record?.wealthAtStart ?? 0;
@@ -263,13 +322,6 @@ export class HawlPage implements OnInit, OnDestroy {
       this.ts.currentLanguage === 'ar' ? 'ar-EG' : 'en-GB',
       { year: 'numeric', month: 'long', day: 'numeric' },
     );
-  }
-
-  formatHijriDate(iso: string): string {
-    const date = new Date(iso);
-    // Use UTC parts to avoid timezone shifting the date (ISO strings are UTC midnight)
-    const h = this.hijriService.convertUTC(date);
-    return h.formatted(this.ts.currentLanguage);
   }
 
   formatEGP(n: number): string {

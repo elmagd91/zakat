@@ -52,7 +52,7 @@
             (click)="decrementOffset()"
             [disabled]="hijriOffset <= minHijriOffset"
           >−</button>
-          <span class="stepper-value">{{ hijriOffsetLabel }}</span>
+          <span [class]="stepperAnimId > 0 ? 'stepper-value anim-' + (stepperAnimId % 2) : 'stepper-value'">{{ hijriOffsetLabel }}</span>
           <button
             class="stepper-btn"
             (click)="incrementOffset()"

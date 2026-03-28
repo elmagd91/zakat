@@ -105,7 +105,17 @@
         </span>
         <span class="summary-value date-stack">
           <span class="date-gregorian">{{ formatDate(hawlState.record!.startDate) }}</span>
-          <span class="date-hijri">{{ formatHijriDate(hawlState.record!.startDate) }}</span>
+          <span class="date-hijri">{{ startHijriStr }}</span>
+        </span>
+      </div>
+      <div class="summary-row" *ngIf="endDateISO">
+        <span class="summary-label">
+          <ion-icon name="checkmark-circle-outline"></ion-icon>
+          {{ ts.t('endsOn') }}
+        </span>
+        <span class="summary-value date-stack">
+          <span class="date-gregorian">{{ formatDate(endDateISO) }}</span>
+          <span class="date-hijri">{{ endHijriStr }}</span>
         </span>
       </div>
       <div class="summary-row" *ngIf="hawlState.record!.nisabAtStart > 0">

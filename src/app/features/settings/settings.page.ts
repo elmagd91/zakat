@@ -106,10 +106,6 @@ export class SettingsPage implements OnInit, OnDestroy {
   }
 
   private refreshHijriDate(): void {
-    // Show local fallback instantly, then update from Aladhan API
-    this.todayHijriFormatted = this.hijriService
-      .todayHijri(this.hijriOffset)
-      .formatted(this.ts.currentLanguage as 'en' | 'ar');
     this.hijriService.todayHijriAsync(this.hijriOffset).then(h => {
       this.todayHijriFormatted = h.formatted(this.ts.currentLanguage as 'en' | 'ar');
     });
@@ -129,11 +125,18 @@ export class SettingsPage implements OnInit, OnDestroy {
     this.settingsService.setHedgePercentage(value);
   }
 
+  /** Increments on each stepper click to alternate CSS animation class. */
+  stepperAnimId = 0;
+
+  private stepperTick(): void { this.stepperAnimId++; }
+
   incrementOffset(): void {
+    this.stepperTick();
     this.settingsService.setHijriDayOffset(this.hijriOffset + 1);
   }
 
   decrementOffset(): void {
+    this.stepperTick();
     this.settingsService.setHijriDayOffset(this.hijriOffset - 1);
   }
 

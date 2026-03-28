@@ -46,12 +46,19 @@ export class HijriService {
   // ── Async API-first path ────────────────────────────────────────────────
 
   /**
-   * Fetch today's Hijri date from the Aladhan API and apply the given offset.
+   * Fetch today's Hijri date from the Aladhan API, shifted by the given day offset.
    * Falls back to the local algorithm if the request fails.
+   *
+   * We shift the Gregorian date first and then fetch, rather than fetching today
+   * and offsetting locally. This avoids a ±1 day error that occurs when the local
+   * tabular algorithm disagrees with the API for today's date — applying the local
+   * algorithm's offset on top of an API-accurate base causes jumps of 2 days
+   * instead of 1.
    */
   async todayHijriAsync(offset = 0): Promise<HijriDate> {
-    const base = await this.fetchFromApi(new Date());
-    return this.applyOffset(base, offset);
+    const shifted = new Date();
+    shifted.setDate(shifted.getDate() + offset);
+    return this.fetchFromApi(shifted);
   }
 
   /**
@@ -91,6 +98,14 @@ export class HijriService {
       // Fallback: inverse of jdToHijri using the same tabular algorithm
       return this.hijriToGregorianFallback(hd, hm, hy);
     }
+  }
+
+  /**
+   * API-backed conversion for an arbitrary Gregorian date.
+   * Falls back to the local algorithm if the API is unavailable.
+   */
+  async convertAsync(date: Date): Promise<HijriDate> {
+    return this.fetchFromApi(date);
   }
 
   // ── Sync fallback path (used while API is loading) ──────────────────────
@@ -167,17 +182,6 @@ export class HijriService {
       // Offline or API error → fall back to local algorithm
       return this.convert(date, 0);
     }
-  }
-
-  /**
-   * Apply a day offset to a base HijriDate by shifting today's date
-   * and recomputing locally (avoids a second API call).
-   */
-  private applyOffset(base: HijriDate, offset: number): HijriDate {
-    if (offset === 0) return base;
-    const shifted = new Date();
-    shifted.setDate(shifted.getDate() + offset);
-    return this.convert(shifted, 0);
   }
 
   private makeHijriDate(hd: number, hm: number, hy: number): HijriDate {

@@ -84,7 +84,13 @@ export class HawlService {
     try {
       const raw = localStorage.getItem(HAWL_STORAGE_KEY);
       if (!raw) return null;
-      return JSON.parse(raw) as HawlRecord;
+      const record = JSON.parse(raw) as HawlRecord;
+      // Discard any persisted record with an invalid start date
+      if (!record?.startDate || isNaN(new Date(record.startDate).getTime())) {
+        localStorage.removeItem(HAWL_STORAGE_KEY);
+        return null;
+      }
+      return record;
     } catch {
       return null;
     }

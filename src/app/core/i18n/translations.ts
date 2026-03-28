@@ -111,6 +111,7 @@ export interface Translations {
   daysElapsed: string;
   daysRemaining: string;
   startedOn: string;
+  endsOn: string;
   nisabAtStart: string;
   wealthAtStart: string;
   resetHawl: string;
@@ -246,6 +247,7 @@ export const TRANSLATIONS: Record<Language, Translations> = {
     daysElapsed: 'days elapsed',
     daysRemaining: 'days remaining',
     startedOn: 'Started on',
+    endsOn: 'Ends on',
     nisabAtStart: 'Nisab at start',
     wealthAtStart: 'Wealth at start',
     resetHawl: 'Reset Hawl',
@@ -380,6 +382,7 @@ export const TRANSLATIONS: Record<Language, Translations> = {
     daysElapsed: 'يوماً مضى',
     daysRemaining: 'يوماً متبقياً',
     startedOn: 'بدأ في',
+    endsOn: 'ينتهي في',
     nisabAtStart: 'النصاب عند البدء',
     wealthAtStart: 'الثروة عند البدء',
     resetHawl: 'إعادة تعيين الحول',
