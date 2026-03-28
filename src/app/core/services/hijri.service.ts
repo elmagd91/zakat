@@ -111,6 +111,21 @@ export class HijriService {
     return this.convert(new Date(), offset);
   }
 
+  /**
+   * Like convert() but reads the UTC date components (year/month/day) from
+   * the given Date object instead of local-time components.
+   * Use this when the Date was parsed from an ISO string that represents a
+   * UTC midnight value (e.g. stored HawlRecord.startDate).
+   */
+  convertUTC(date: Date): HijriDate {
+    const Y = date.getUTCFullYear();
+    const M = date.getUTCMonth() + 1;
+    const D = date.getUTCDate();
+    const jd = this.gregorianToJD(Y, M, D);
+    const { hy, hm, hd } = this.jdToHijri(jd);
+    return this.makeHijriDate(hd, hm, hy);
+  }
+
   // ── Internal helpers ────────────────────────────────────────────────────
 
   /**

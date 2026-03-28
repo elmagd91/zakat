@@ -121,80 +121,107 @@ export class HawlPage implements OnInit, OnDestroy {
    * Opens an Ionic alert with three selects to choose a Hijri date.
    * On confirm, converts the Hijri date to Gregorian (via Aladhan API)
    * and starts/updates the Hawl with that date.
+   *
+   * NOTE: Ionic AlertController sanitizes the 'message' field, so we inject
+   * HTML into the alert's DOM manually after alert.present() resolves.
    */
   async openDatePicker(isEdit = false): Promise<void> {
     const offset = this.settingsService.hijriDayOffset;
-    // Get today's Hijri date to pre-fill the picker
     const today = this.hijriService.todayHijri(offset);
 
     const isAr = this.ts.currentLanguage === 'ar';
     const monthNames = isAr ? HIJRI_MONTHS_AR : HIJRI_MONTHS_EN;
 
-    // If editing, pre-fill with the current start date's Hijri equivalent
-    let preYear = today.year;
+    // Pre-fill values
+    let preYear  = today.year;
     let preMonth = today.month;
-    let preDay = today.day;
+    let preDay   = today.day;
 
     if (isEdit && this.hawlState.record) {
       const startGreg = new Date(this.hawlState.record.startDate);
-      const startHijri = this.hijriService.convert(startGreg);
-      preYear = startHijri.year;
-      preMonth = startHijri.month;
-      preDay = startHijri.day;
+      // Use UTC parts so timezone doesn't shift the date
+      const h = this.hijriService.convertUTC(startGreg);
+      preYear  = h.year;
+      preMonth = h.month;
+      preDay   = h.day;
     }
 
-    // Build year options: 1420 AH (≈ 2000 CE) to current year + 1
-    const yearOptions = Array.from({ length: today.year - 1420 + 2 }, (_, i) => 1420 + i)
-      .map(y => `<option value="${y}" ${y === preYear ? 'selected' : ''}>${y}</option>`)
-      .join('');
-
-    const monthOptions = monthNames
-      .map((name, i) => {
-        const m = i + 1;
-        return `<option value="${m}" ${m === preMonth ? 'selected' : ''}>${m} - ${name}</option>`;
-      })
-      .join('');
-
-    const dayOptions = Array.from({ length: 30 }, (_, i) => i + 1)
-      .map(d => `<option value="${d}" ${d === preDay ? 'selected' : ''}>${d}</option>`)
-      .join('');
+    // Captured inside handler closure
+    let savedHd = preDay, savedHm = preMonth, savedHy = preYear;
 
     const alert = await this.alertCtrl.create({
       header: this.ts.t('setStartDateTitle'),
       cssClass: 'hijri-datepicker-alert',
-      message: `
-        <div class="picker-row">
-          <label>${this.ts.t('hijriDay')}</label>
-          <select id="picker-day">${dayOptions}</select>
-        </div>
-        <div class="picker-row">
-          <label>${this.ts.t('hijriMonth')}</label>
-          <select id="picker-month">${monthOptions}</select>
-        </div>
-        <div class="picker-row">
-          <label>${this.ts.t('hijriYear')}</label>
-          <select id="picker-year">${yearOptions}</select>
-        </div>
-      `,
+      // Leave message empty — we inject HTML directly after present()
+      message: ' ',
       buttons: [
         { text: this.ts.t('cancel'), role: 'cancel' },
         {
           text: this.ts.t('confirm'),
           handler: () => {
-            // Read values from the DOM selects after user interaction
-            const dayEl  = document.getElementById('picker-day')  as HTMLSelectElement | null;
-            const monthEl = document.getElementById('picker-month') as HTMLSelectElement | null;
-            const yearEl  = document.getElementById('picker-year')  as HTMLSelectElement | null;
-            const hd = dayEl   ? parseInt(dayEl.value,   10) : preDay;
-            const hm = monthEl ? parseInt(monthEl.value, 10) : preMonth;
-            const hy = yearEl  ? parseInt(yearEl.value,  10) : preYear;
-            this.applyHijriStartDate(hd, hm, hy);
+            this.applyHijriStartDate(savedHd, savedHm, savedHy);
             return true;
           },
         },
       ],
     });
     await alert.present();
+
+    // After the alert is in the DOM, replace its message div with our picker HTML
+    const msgEl = document.querySelector('.hijri-datepicker-alert .alert-message') as HTMLElement | null;
+    if (msgEl) {
+      msgEl.innerHTML = this.buildPickerHTML(preDay, preMonth, preYear, monthNames);
+
+      // Wire up change events to keep savedH* in sync
+      const dayEl   = msgEl.querySelector('#picker-day')   as HTMLSelectElement | null;
+      const monthEl = msgEl.querySelector('#picker-month') as HTMLSelectElement | null;
+      const yearEl  = msgEl.querySelector('#picker-year')  as HTMLSelectElement | null;
+
+      dayEl?.addEventListener('change',   () => { savedHd = parseInt(dayEl.value,   10); });
+      monthEl?.addEventListener('change', () => { savedHm = parseInt(monthEl.value, 10); });
+      yearEl?.addEventListener('change',  () => { savedHy = parseInt(yearEl.value,  10); });
+    }
+  }
+
+  /** Build the picker HTML string (not bound by Angular's sanitizer here). */
+  private buildPickerHTML(
+    preDay: number, preMonth: number, preYear: number,
+    monthNames: string[],
+  ): string {
+    const todayYear = this.hijriService.todayHijri(0).year;
+
+    const dayOpts = Array.from({ length: 30 }, (_, i) => i + 1)
+      .map(d => `<option value="${d}"${d === preDay ? ' selected' : ''}>${d}</option>`)
+      .join('');
+
+    const monthOpts = monthNames
+      .map((name, i) => {
+        const m = i + 1;
+        return `<option value="${m}"${m === preMonth ? ' selected' : ''}>${m} - ${name}</option>`;
+      })
+      .join('');
+
+    const yearOpts = Array.from({ length: todayYear - 1420 + 2 }, (_, i) => 1420 + i)
+      .map(y => `<option value="${y}"${y === preYear ? ' selected' : ''}>${y}</option>`)
+      .join('');
+
+    const dayLabel   = this.ts.t('hijriDay');
+    const monthLabel = this.ts.t('hijriMonth');
+    const yearLabel  = this.ts.t('hijriYear');
+
+    return `
+      <div class="picker-row">
+        <label>${dayLabel}</label>
+        <select id="picker-day">${dayOpts}</select>
+      </div>
+      <div class="picker-row">
+        <label>${monthLabel}</label>
+        <select id="picker-month">${monthOpts}</select>
+      </div>
+      <div class="picker-row">
+        <label>${yearLabel}</label>
+        <select id="picker-year">${yearOpts}</select>
+      </div>`;
   }
 
   /** Convert the chosen Hijri date to Gregorian and update the Hawl record. */
@@ -238,7 +265,8 @@ export class HawlPage implements OnInit, OnDestroy {
 
   formatHijriDate(iso: string): string {
     const date = new Date(iso);
-    const h = this.hijriService.convert(date);
+    // Use UTC parts to avoid timezone shifting the date (ISO strings are UTC midnight)
+    const h = this.hijriService.convertUTC(date);
     return h.formatted(this.ts.currentLanguage);
   }
 
