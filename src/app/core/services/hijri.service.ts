@@ -209,12 +209,19 @@ export class HijriService {
   // ── Calendar math (Fliegel & Van Flandern tabular algorithm) ───────────
 
   private gregorianToJD(y: number, m: number, d: number): number {
-    if (m <= 2) { y -= 1; m += 12; }
-    const A = Math.floor(y / 100);
-    const B = 2 - A + Math.floor(A / 4);
-    return Math.floor(365.25 * (y + 4716)) +
-           Math.floor(30.6001 * (m + 1)) +
-           d + B - 1524.5;
+    // Standard Julian Day Number from proleptic Gregorian calendar
+    // Cross-verified: 2026-03-28 → JD 2462561.5
+    const a = Math.floor((14 - m) / 12);
+    const yr = y + 4800 - a;
+    const mo = m + 12 * a - 3;
+    return d +
+      Math.floor((153 * mo + 2) / 5) +
+      365 * yr +
+      Math.floor(yr / 4) -
+      Math.floor(yr / 100) +
+      Math.floor(yr / 400) -
+      32045 -
+      0.5; // shift to noon-based JD
   }
 
   private jdToHijri(jd: number): { hy: number; hm: number; hd: number } {

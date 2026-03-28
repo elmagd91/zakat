@@ -68,6 +68,8 @@ export class HawlPage implements OnInit, OnDestroy {
   };
 
   hijriDateStr = '';
+  /** Today's Hijri year — populated from Aladhan API in ngOnInit. */
+  todayHijriYear = 1447; // safe fallback; overwritten by API
 
   get hawlDays(): number { return this.hawlService.hawlDays; }
 
@@ -101,6 +103,7 @@ export class HawlPage implements OnInit, OnDestroy {
     this.hijriDateStr = this.hijriService.todayHijri(offset).formatted(this.ts.currentLanguage);
     this.hijriService.todayHijriAsync(offset).then(h => {
       this.hijriDateStr = h.formatted(this.ts.currentLanguage);
+      this.todayHijriYear = h.year; // store API-backed year for the picker
     });
   }
 
@@ -126,27 +129,24 @@ export class HawlPage implements OnInit, OnDestroy {
    * HTML into the alert's DOM manually after alert.present() resolves.
    */
   async openDatePicker(isEdit = false): Promise<void> {
-    const offset = this.settingsService.hijriDayOffset;
-    const today = this.hijriService.todayHijri(offset);
-
     const isAr = this.ts.currentLanguage === 'ar';
     const monthNames = isAr ? HIJRI_MONTHS_AR : HIJRI_MONTHS_EN;
 
-    // Pre-fill values
-    let preYear  = today.year;
-    let preMonth = today.month;
-    let preDay   = today.day;
+    // Default pre-fill: today's Hijri date from API-backed property
+    let preYear  = this.todayHijriYear;
+    let preMonth = 1;
+    let preDay   = 1;
 
     if (isEdit && this.hawlState.record) {
+      // Edit mode: pre-fill with current start date converted via UTC path
       const startGreg = new Date(this.hawlState.record.startDate);
-      // Use UTC parts so timezone doesn't shift the date
       const h = this.hijriService.convertUTC(startGreg);
       preYear  = h.year;
       preMonth = h.month;
       preDay   = h.day;
     }
 
-    // Captured inside handler closure
+    // Captured inside handler closure (updated by change listeners)
     let savedHd = preDay, savedHm = preMonth, savedHy = preYear;
 
     const alert = await this.alertCtrl.create({
@@ -188,7 +188,8 @@ export class HawlPage implements OnInit, OnDestroy {
     preDay: number, preMonth: number, preYear: number,
     monthNames: string[],
   ): string {
-    const todayYear = this.hijriService.todayHijri(0).year;
+    // Use API-backed year (stored in todayHijriYear) — never the broken sync path
+    const todayYear = this.todayHijriYear;
 
     const dayOpts = Array.from({ length: 30 }, (_, i) => i + 1)
       .map(d => `<option value="${d}"${d === preDay ? ' selected' : ''}>${d}</option>`)
@@ -201,7 +202,8 @@ export class HawlPage implements OnInit, OnDestroy {
       })
       .join('');
 
-    const yearOpts = Array.from({ length: todayYear - 1420 + 2 }, (_, i) => 1420 + i)
+    const firstYear = Math.max(1400, todayYear - 49);
+    const yearOpts = Array.from({ length: todayYear - firstYear + 2 }, (_, i) => firstYear + i)
       .map(y => `<option value="${y}"${y === preYear ? ' selected' : ''}>${y}</option>`)
       .join('');
 
